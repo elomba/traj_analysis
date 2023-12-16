@@ -49,7 +49,8 @@ contains
     real, intent(INOUT) :: rho(0:lsmax)
     real :: rv(3), rr2, rr, fact
     integer :: k, l, i, j, ind
-    ! g(r) is normalized for each configuration, since particle number may change
+    ! g(r) is normalized for each configuration,
+    ! since particle number may change
     do k = 1, nm
        i = members(k)
        rv(1:dim) = r(1:dim,i)-center(1:dim)
