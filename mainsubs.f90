@@ -1,0 +1,397 @@
+subroutine initclus(Iconf)
+  use clusters
+  Use comun, only : ndr
+  implicit none
+  integer, intent(IN) :: Iconf
+  drho =0.05
+  ndrho = nint(1.4/drho)
+  allocate(densclus(0:ndrho),radii(0:ndr))
+  densclus(:) = 0
+  radii(:) = 0
+end subroutine initclus
+subroutine cluster_search(iconf,nmol,stopEvent,startEvent,nbcuda,nthread)
+  use cudafor
+  use comun
+  use clusters
+  use gpucells
+  use gpcodes
+  use dev_def
+  use dbscan
+  use thrust
+  use linkcell, only : use_cell
+  implicit none
+  type(cudaEvent), intent(INOUT) :: startEvent, stopEvent
+  integer, intent(IN) :: iconf, nmol, nbcuda, nthread
+  integer :: cluster_id, i, j
+  real :: t2, t3, t4
+  Character :: error_msg*64
+  t2 = gptime(stopEvent,startEvent)
+  if (use_cell) then
+     call gpu_graph_cell<<<nbcuda,nthread>>>(r_d,Nmol,ndim,rcl**2,sidel_d,jmin)
+  else
+     call gpu_graf<<<nbcuda,nthread>>>(r_d,Nmol,ndim,rcl**2,sidel_d,jmin)
+  endif
+  goffset(:) = gneighbors(:)
+  neighbors(:) = gneighbors(:)
+  core(:) = gcore(:)
+  t3 = gptime(stopEvent,startEvent) 
+  tgraph = tgraph + t3-t2
+  call thrustscan(goffset,Nmol,1)
+  offset(:) = goffset(:)
+  t2 =  gptime(stopEvent,startEvent) 
+  tthrus = tthrus + t2-t3
+  if (use_cell) then
+     call gpu_adj_cell<<<nbcuda,nthread>>>(r_d,Nmol,ndim,rcl**2,sidel_d)
+  else
+     call gpu_adj<<<nbcuda,nthread>>>(r_d,Nmol,ndim,rcl**2,sidel_d)
+  endif
+  adjacency(:) = gadjacency(:)
+  gdone(:) = 0
+  done(:) = 0
+  cluster_id = 0
+  visited(:) = .false.
+  t4 = gptime(stopEvent,startEvent) 
+  tadj = tadj + t4-t2
+  do i = 1, nmol
+     if (core(i) .and. done(i)==0) then
+        gvisited(:) = .false.
+        cluster_id = cluster_id+1
+        call  breadfirst(i,nbcuda, nthread, Nmol,jmin,cluster_id, border, visited, done)
+     endif
+  end do
+  t3 = gptime(stopEvent,startEvent) 
+  tbfs = tbfs + t3-t4
+!  print *, " ** Total number of clusters found : ", cluster_id, " Conf no. ", iconf
+  if (maxval(neighbors(:))>50) then
+     write(error_msg,'(" Warning:redimension next to at least ", i5)') maxval(neighbors(:))
+     stop(error_msg)
+  end if
+  Nu_clus = cluster_id
+end subroutine cluster_search
+
+subroutine cluster_analysis(Iconf, Nmol)
+  use comun
+  use clusters
+  use gpucells
+  use gpcodes
+  use dev_def
+  use cpucodes, only : minj, rdfcl, cldens, rdfclcl, denspcl
+  implicit none
+  integer, intent(IN) :: Iconf, Nmol
+  integer :: i, j, k, cluster_id, icl, ip, ind, indr, maxcln, maxcl,&
+       & imaxcl, clsz, nbigcl, clussize, cmin 
+  Real (myprec), Dimension(3) ::  c0, rv, rv2, rvi, rvj, desp, xi,si, xss,sss, theta, clcent, vcl
+  Real (myprec) :: denscl
+  Real (kind=8) ::  mcl, ekcls, suma, rclus, rcluster, volcl
+  if (Nu_clus < 1) then
+     maxcln =1
+  else
+     maxcln = Nu_clus
+  endif
+  if ( Iconf > 1) then
+     deallocate(cluster,contador)
+  endif
+  allocate(cluster(maxcln),contador(maxcln))
+  Cluster_id = maxcln
+  contador(:) = 0
+  maxcl = 0
+  do i = 1, cluster_id
+     clsz = count(done==i)
+     if (clsz > maxcl) then
+        maxcl = clsz
+        imaxcl = i
+     endif
+     cluster(i)%clsize = clsz
+     allocate(cluster(i)%members(clsz))
+  end do
+  contador(:) = 0
+  do i = 1, Nmol
+     j = done(i)
+     if (j> 0) then
+        contador(j) = contador(j)+1
+        cluster(j)%members(contador(j)) = i
+     endif
+  enddo
+  nbigcl = 0
+  do i=1, cluster_id
+     if (cluster(i)%clsize >= minclsize) nbigcl=nbigcl+1
+  end do
+  !
+  ! Write trajectory file with centers of mass of clusters with size > minclsize
+  !
+  write(188,"('ITEM: TIMESTEP'/I12/'ITEM: NUMBER OF ATOMS'/I12/'ITE&
+       &M: BOX BOUNDS pp pp pp')")nstep, nbigcl
+  write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
+  write(188,"('ITEM: ATOMS id type id x y z')")
+  !        write(189,*) " iconf=", iconf
+  icl = 0
+  do I = 1, cluster_id
+     j = cluster(i)%clsize
+     ! Calculate cluster size distro
+     ind = nint(real(j)/real(dcl))
+     sizedist(ind) =  sizedist(ind)+1
+     if (j>=jmin) then
+        ! Determine center of mass with PBC
+        ! https://en.wikipedia.org/wiki/Center_of_mass#Systems_with_periodic_boundary_conditions
+        xss(:) = 0
+        sss(:) = 0
+        vcl(:) = 0
+        mcl = 0
+        ekcls = 0
+        do k = 1, j
+           ip = cluster(i)%members(k)
+           rv(:) = r(:,ip)
+           theta(:) = 2*pi*rv(:)/sidel(:)
+           xss(:) = xss(:)+cos(theta(:))
+           sss(:) = sss(:)+sin(theta(:))
+           vcl(:) = vcl(:)+masa(ip)*vel(:,ip)
+           mcl = mcl+masa(ip)
+        end do
+        xss(:)=xss(:)/j
+        sss(:)=sss(:)/j
+        theta(:) = atan2(-sss(:),-xss(:))+pi
+        !
+        ! Restore origin for centers of mass position to the original coordinate
+        !
+        cluster(i)%center(:) =  sidel(:)*theta(:)/(2*pi)+rlow(:)
+        !
+        ! Store cluster's center of mass velocity and net mass
+        !
+        cluster(i)%vl(:) = vcl(:)/mcl
+        cluster(i)%mass = mcl
+        ekcls = 0
+        do k = 1, j
+           ip = cluster(i)%members(k)
+           ekcls = ekcls + 0.5*masa(ip)*dot_product(vel(:,ip)&
+                &-cluster(i)%vl(:),vel(:,ip)-cluster(i)%vl(:))
+        enddo
+        cluster(i)%ekin = ekcls
+     endif
+     if (j>=minclsize)then
+        icl = icl+1
+        write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(:)
+     end if
+  end do
+  ekincl = 0
+  ekincls = 0
+  suma = 0
+  do i = 1, cluster_id
+     suma = suma+cluster(i)%clsize
+     if (cluster(i)%clsize >= minclsize) then
+        ekincl = ekincl + 0.5*cluster(i)%mass&
+             &*dot_product(cluster(i)%vl(:),cluster(i)%vl(:))
+        ekincls = ekincls + cluster(i)%ekin
+     endif
+  enddo
+  ekclaver = ekclaver + ekincl
+  ekinclsav = ekinclsav + ekincls
+  write(200,'(i7,i4,f15.7)')iconf, cluster_id, 1.0-(suma/natms)
+  if (iconf > 1) then
+     deallocate(rclxyz)
+     deallocate(rclxyzd)
+     deallocate(densav)
+  endif
+  allocate(rclxyz(ndim,cluster_id),densav(cluster_id))
+  allocate(rclxyzd(ndim,cluster_id))
+  gcluster(:) = 0
+  rhoclus(:) = 0
+  denscl = 0.0
+  rclus =  0.0
+  do i=1, cluster_id
+     clussize = cluster(i)%clsize
+     clcent(:) =  cluster(i)%center(1:3)
+     rclxyz(:,i) =  clcent(:)
+     rcluster = radius(cluster(i)%members(:),clussize,clcent,sidel)
+     cluster(i)%radio = rcluster
+     if (ndim==3) then
+        volcl = (4*pi*rcluster**3/3.0)
+     else
+        volcl = pi*rcluster**2
+     endif
+     cluster(i)%cldens = real(clussize)/volcl
+     ind = nint(cluster(i)%cldens*sigma**3/drho)
+     indr = nint(cluster(i)%radio/deltar)
+     if (ind<=ndrho) densclus(ind) = densclus(ind)+1
+     if (indr<=ndr)radii(indr) = radii(indr)+1
+     denscl = denscl + cluster(i)%cldens
+     rclus = rclus +  rcluster
+     !           if (iconf == 2) print *, iconf, rclus, rcluster
+  end do
+  rclxyzd(:,:) = rclxyz(:,:)
+  if (ndim == 3) then
+     call sqf3Dcl<<<tBlock,grid>>>(rclxyzd,cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
+  else
+     call sqf2Dcl<<<tBlock,grid>>>(rclxyzd,cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
+  end if
+  averdens = averdens + denscl/cluster_id
+  avradio = avradio + rclus/cluster_id
+  do i = 1, cluster_id
+     densav(i) = cldens(ndim,cluster(i)%members(:),cluster(i)%clsize,sidel&
+          &,side2, cluster(i)%center(1:3),0.8*cluster(i)%radio)
+     if (cluster(i)%clsize > minclsize) then
+        cmin  = minj(ndim,cluster(i)%members,cluster(i)%clsize&
+             &,cluster(i)%center,sidel,side2) 
+        call rdfcl(ndim,cluster(i)%members(:),cluster(i)%clsize,sidel&
+             &,side2,gcluster,lsmax,deltar,densav(i),cmin)
+        call denspcl(ndim,cluster(i)%members(:),cluster(i)%clsize,sidel&
+             &,side2,rhoclus(0:lsmax),lsmax,deltar,cluster(i)%center(1:3))
+     endif
+  end do
+  gclustav(:) = gclustav(:)+gcluster(:)/nbigcl
+  rhoclusav(:) = rhoclusav(:)+rhoclus(:)/nbigcl
+  call rdfclcl(ndim,rclxyz(1:3,1:cluster_id),cluster_id,sidel&
+       &,side2,gclcl,lsmax,deltar,volumen)
+  NTclus = suma
+end subroutine cluster_analysis
+
+subroutine SQcalc(Nmol)
+  use comun
+  use gpucells
+  use gpcodes
+  use dev_def
+  implicit none
+  integer, intent(IN) :: Nmol
+
+  !
+  ! Sample all 3D vectors for q<qmin and
+  ! (1,0,0),(0,1,0),(0,0,1) beyond
+  !
+  if (nqmin>1) then
+     if (ndim == 3) then
+        call sqf3D<<<tBlock,grid>>>(r_d,Nmol,ndim,itype_d,ntype_d,ipos_d,fk_d,sqf_d,sqfp_d,&
+             & nsp,nqmax,qmin2,dq)
+        call sqfact<<<nqmax/nthread+1,nthread>>>(r_d,Nmol,ndim,itype_d,ntype_d,ipos_d,fk_d,&
+             & sqf_d,sqfp_d,nsp,nqmax,nqmin+1)
+     else
+        call sqf2D<<<tBlock,grid>>>(r_d,Nmol,ndim,itype_d,ntype_d,ipos_d,fk_d,sqf_d,sqfp_d,&
+             & nsp,nqmax,qmin2,dq)
+        call sqfact2<<<nqmax/nthread+1,nthread>>>(r_d,Nmol,ndim,itype_d,ntype_d,ipos_d,fk_d,&
+             & sqf_d,sqfp_d,nsp,nqmax,nqmin+1)
+     endif
+  else
+     !
+     ! for very Uniform fluids and large no. of configurations
+     ! just sample   (1,0,0),(0,1,0),(0,0,1) directions
+     !
+     if (ndim == 3) then
+        call sqfact<<<nqmax/nthread+1,nthread>>>(r_d,Nmol,ndim,itype_d,ntype_d,ipos_d,fk_d,sqf_d,sqfp_d,nsp,nqmax,nqmin)
+     else
+        call sqfact2<<<nqmax/nthread+1,nthread>>>(r_d,Nmol,ndim,itype_d,ntype_d,ipos_d,fk_d,sqf_d,sqfp_d,nsp,nqmax,nqmin)
+     end if
+  end if
+   end subroutine SQcalc
+
+subroutine printrdf(rcl, lsmax)
+  use comun
+  implicit none
+  real(myprec), intent(IN) :: rcl
+  Real (myprec) :: gmix(nspmax,nspmax), deltav, ri, xfj
+  integer, intent(in) :: lsmax
+  integer :: i, j, l
+  if (rcl>0) write(999,'(2f15.6)') 0.0, rhoclusav(0)/(4*pi*((deltar&
+       &/2)**3)/3.0*Nconf)
+  Do i = 1, lsmax-2
+     ri = i*deltar
+     if (ndim == 3) then
+        deltaV = 4*pi*((ri+deltar/2)**3-(ri-deltar/2)**3)/3.0
+     else
+        deltaV = pi*((ri+deltar/2)**2-(ri-deltar/2)**2)
+     endif
+     !
+     !
+     Do j=1,nsp
+        Do l=j,nsp
+           xfj = real(ntype(j),kind=8)/Real(natms,kind=8)
+           gmix(j,l) = (j/l+1)*volumen*histomix(i,j,l)/(deltaV*ntype(l)*ntype(j)*Nconf)
+           if (idir >0) gmix(j,l) = densty*gmix(j,l)/rdenst
+           
+        End Do
+     End Do
+     if (rcl > 0) then
+        Write(99,'(18f16.7)')i*deltar,(gmix(j,j:nsp),j=1,nsp),&
+             & gclustav(i)/(deltaV*Nconf),2*gclcl(i)/(deltaV*Nconf)
+     else
+        Write(99,'(18f16.7)')i*deltar,(gmix(j,j:nsp),j=1,nsp)
+     endif
+  End Do
+end subroutine printrdf
+
+subroutine print_clusinfo(nqmin, Nmol)
+  use comun 
+  use clusters
+  implicit none
+  integer, intent(IN) :: nqmin, Nmol
+  integer :: i, ndist
+  real(myprec) :: avcldens, deltaV, ri, suma,  norm
+  Write(*,"(' ** Average total number of particles in clusters ', f10.2)")NTclus/nconf
+  Write(*,"(' ** Average total number of clusters ', I5)") nint(sum(sizedist(:))/real(nconf))
+  avcldens =  sum(sizedist(:)/real(nconf))/volumen
+  Write(*,"(' ** Average cluster density ', f15.9)") avcldens
+  open(125,file='dens.dat')
+  open(126,file='radii.dat')
+  open(999,file='rhoprof.dat')
+  open(1001,file='clustdistr.dat')
+  do i = 1, ndrho
+     write(125,"(5f15.7)")i*drho,i*drho/sigma**3,(real(densclus(i))/drho/Nconf),real(densclus(i))/Nconf
+  enddo
+  do i = 1, ndr
+     ri = i*deltar
+     if (ndim == 3) then
+        deltaV = 4*pi*((ri+deltar/2)**3-(ri-deltar/2)**3)/3.0
+     else
+        deltaV = pi*((ri+deltar/2)**2-(ri-deltar/2)**2)
+     endif
+     if (radii(i).ne.0) write(126,"(2f15.7)")ri,(real(radii(i))/sum(radii(:))/deltar)
+     write(999,'(2f15.6)') ri, rhoclusav(i)/(deltaV*Nconf)
+  end do
+
+  open(102,file='sqcl.dat')
+  do i = 1, nqmin
+     write(102,'(2f15.7)')i*dq,sqfcl(i)/(Nconf*real(nq(i)))
+  enddo
+
+  !
+  ! Normalize cluster size distribution a s*n(s)/Ntotal
+  !
+  write(1001,"('#   N          %clus.         rho_cl ')")
+  suma = 0
+  ndist = nint(real(Nmol)/real(dcl))
+  norm = (0.5*(sizedist(1)+sizedist(ndist))+sum(sizedist(2:ndist-1)))*dcl
+  do i = 1, ndist
+     suma = i*sizedist(i)*dcl+suma
+     if (sizedist(i) > 0) write(1001,'(4f15.7)')(i-0.5)*dcl, real(i*sizedist(i))/(real(Nconf*dcl*Nmol)),real(sizedist(i))/norm, real(sizedist(i))/real(Nconf)
+  enddo
+  close(1001)
+end subroutine print_clusinfo
+
+subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
+  use comun
+  use dev_def
+  use gpcodes, only : rdf, rdf2
+  implicit none
+  integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
+  histomix_d(:,:,:) = 0
+  if (ndim == 3) then
+     call rdf<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
+          &,itype_d,side2,sidel_d,deltar)
+  else
+     call rdf2<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
+          &,itype_d,side2,sidel_d,deltar)
+  endif
+  histomixi(:,:,:) = histomix_d(:,:,:)
+  histomix(:,:,:) = histomix(:,:,:)+real(histomixi(:,:,:))
+end subroutine RDFcomp
+
+
+subroutine profile_comp(Nmol,Iconf,nbcuda,nthread)
+  use comun
+  use dev_def
+  use gpcodes, only : rdf, rdf2
+  implicit none
+  integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
+  densprof_d(:,:)= 0
+  call dprof<<<nbcuda,nthread>>>(r_d,Nmol,ndim,densprof_d,width,nsp,idir,itype_d&
+       &,pwall,deltar)
+  densprofi(:,:) = densprof_d(:,:)
+  densprof(:,:) = densprof(:,:) + real(densprofi(:,:))
+end subroutine profile_comp
