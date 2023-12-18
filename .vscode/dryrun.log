@@ -7,7 +7,6 @@ nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  CPU
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  gpucodes.f90 -o gpucodes.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  DBscan.f90 -o DBscan.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  Init.f90 -o Init.o
- 
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  Cells.f90 -o Cells.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  mainsubs.f90 -o mainsubs.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -O2 -gpu=cc60,cc70,cc80  trj_analysis.f90 -o trj_analysis.o

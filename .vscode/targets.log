@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Dec 16 01:19:13 2023
+# Make data base, printed on Mon Dec 18 11:31:11 2023
 
 # Variables
 
@@ -20,8 +20,6 @@ GNUMAKEFLAGS :=
 .SHELLFLAGS := -c
 # environment
 VSCODE_AGENT_FOLDER = /home/enrique/.vscode-server
-# environment
-LC_CTYPE = en_US.UTF-8
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # makefile (from 'Makefile', line 11)
@@ -51,7 +49,7 @@ XDG_DATA_DIRS = /usr/local/share:/usr/share:/var/lib/snapd/desktop
 # environment
 VSCODE_CWD = /home/enrique
 # environment
-SSH_CONNECTION = 66.81.172.176 29170 161.111.19.21 22
+SSH_CONNECTION = 10.5.65.99 56832 10.5.65.33 22
 # makefile (from 'Makefile', line 2)
 PATH := /home/enrique/.vscode-server/bin/0ee08df0cf4527e40edc9aa28f4b5bd38bbff2b2/bin/remote-cli:.:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/enrique/bin:/usr/local/ompi/bin:/usr/local/namd:/usr/local/cuda/bin:/usr/local/bin:/usr/local/cmake-3.26.4/bin:/home/enrique/bin:/home/enrique/bin:/usr/local/nvidia/hpc_sdk/Linux_x86_64/23.7/compilers/bin
 # makefile (from 'Makefile', line 1)
@@ -65,7 +63,7 @@ g16root = /usr/local
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-583ae4fb-da01-48ef-bb19-1d57f0143e0c.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-d039318d-5778-4d2c-a27c-b792f05db48a.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -91,7 +89,6 @@ HOME = /home/enrique
 # environment
 PAR = ib
 # environment
- 
 CUDA_HOME = /usr/local/cuda
 # environment
 LOGNAME = elomba
@@ -152,11 +149,9 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 66.81.172.176 29170 22
+SSH_CLIENT = 10.5.65.99 56832 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
-# environment
-VSCODE_L10N_BUNDLE_LOCATION = 
 # environment
 BROWSER = /home/enrique/.vscode-server/bin/0ee08df0cf4527e40edc9aa28f4b5bd38bbff2b2/bin/helpers/browser.sh
 # environment
@@ -198,7 +193,7 @@ OBJ_CORE = general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o In
 # environment
 MOTD_SHOWN = pam
 # variable set hash-table stats:
-# Load=93/1024=9%, Rehash=0, Collisions=15/128=12%
+# Load=91/1024=9%, Rehash=0, Collisions=15/126=12%
 
 # Pattern-specific Variable Values
 
@@ -206,9 +201,9 @@ MOTD_SHOWN = pam
 
 # Directories
 
-# . (device 57, inode 16371392): 45 files, no impossibilities.
+# . (device 57, inode 16371392): 46 files, no impossibilities.
 
-# 45 files, no impossibilities in 1 directories.
+# 46 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -283,6 +278,7 @@ gpucodes.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+ 
 
 # Not a target:
 Makefile:
@@ -371,7 +367,6 @@ CPUcodes.o: CPUcodes.f90
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
- 
 # @ := CPUcodes.o
 # automatic
 # % := 
@@ -400,12 +395,12 @@ CPUcodes.o: CPUcodes.f90
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 59 / storage = 629 B / avg = 10 B
-# current buf: size = 8162 B / used = 629 B / count = 59 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 60 / storage = 640 B / avg = 10 B
+# current buf: size = 8162 B / used = 640 B / count = 60 / avg = 10 B
 
-# strcache performance: lookups = 91 / hit rate = 35%
+# strcache performance: lookups = 92 / hit rate = 34%
 # hash-table stats:
-# Load=59/8192=1%, Rehash=0, Collisions=8/91=9%
-# Finished Make data base on Sat Dec 16 01:19:13 2023
+# Load=60/8192=1%, Rehash=0, Collisions=8/92=9%
+# Finished Make data base on Mon Dec 18 11:31:11 2023
 
  
