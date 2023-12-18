@@ -1,9 +1,13 @@
 !
-! This program analyzes a LAMMPS generated trajectory in the format
-! "id type id x y z vx vy vz" and computes the pair distribtion
+! This program analyzes a LAMMPS generated trajectory in NETCdf format (alternative .lammpstrj 
+! in the format "id type id x y z vx vy vz") and computes the pair distribtion
 ! functions, structure factor, and if a  rcl>0 is defined to analyze
 ! clusters, the cluster size distribution, and for seggregated
-! clusters its pdf and s(Q)
+! clusters its pdf and s(Q). When idir > 0 idir defines a non-periodic spatial dimension. Across this 
+! dimension a density profile analysis is performed. 
+! In first input line, dim defines the dimensionality of the problem. 
+! IMPORTANT !!!: When dim=2 it is ASSUMED that the 
+! the z-direction is ommited, even it is still read in the trajectory netcdf file. 
 !
 !
 ! E. Lomba, Madrid, Dec. 2022
