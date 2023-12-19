@@ -49,7 +49,7 @@ program trj_analysis
   logical :: cpot, ncdf=.false., found
   Character ::History_file*18, error_msg*64
   real :: time, t1, t2, t3, t4, tGPU, tsQ, trdf,tread,&
-       &  dist, r2, norm
+       &  dist, r2, norm, dum(3)
 
   call cpu_time(t1)
   call cpu_time(cpu0)
@@ -137,7 +137,6 @@ program trj_analysis
      else
         Call  ReadCfg(iunit,io,Iconf,istart)
      endif
-    
      call cpu_time(cpu3)
      tread = tread + cpu3-cpu2
      if (rcl > 0) then
@@ -231,7 +230,7 @@ program trj_analysis
         call cluster_analysis(Iconf,Nmol)
      endif
      ! Periodic output
-     If (Mod(Iconf-1,1).Eq.0) Then
+     If (Mod(Iconf-1,5).Eq.0) Then
         call cpu_time(cpu1)
         Write(*,"(/' ** Working on MD step no. ',i8,' cpu time=',f15.2&
              &/)") nstep, cpu1-cpu0
@@ -281,81 +280,26 @@ program trj_analysis
   end Do
   ! Normalize density profiles computed along the non-periodic dimension
    if (idir>0) then
-     found = .false.
-     i=0
-     do while (.not. found)
-        if (maxval(densprof(i,1:nsp)) < 1.0e-6) then 
-           low = (2*i+1)*deltar+pwall
-           i=i+1
-        else
-           found=.true.
-        endif
-     end do
-     found = .false.
-     i=width
-     do while (.not. found) 
-        if (maxval(densprof(i,1:nsp)) < 1.0e-6) then 
-           high = (2*i+1)*deltar+pwall
-           i=i-1
-        else
-           found=.true.
-        endif
-     end do
-     high = (pwallp+high)/2
-     low = (pwall+low)/2
-     write(*,"('   Highest accesible constrained coordinate for fluid',f15.7,/'   Lowest accessible constrained coordinate for fluid',f15.7)")high,low
-     volumen_r = (high-low)*product(sidel,pdir)
-     rdenst = natms/volumen_r
-     write(*,'(/" ** Total renormalized density =",f10.6)') rdenst
-     do i = 1, nsp
-        write(*,'(/"     - Renormalized density per species",i1," =",f10.6)') i, ntype(i)/volumen_r
-     end do
-     open(222,file='densprof.dat')
-     !
-     ! One dimensional rho(x) normalized such that rho_i(L/2) approximates the bulk average rho_i 
-     !
-     write(222,'("#       r ",7x,8(8x,"rho(",i1,")":))')((i),i=1,nsp)
-     do i=0, width
-        zpos = (2*i+1)*deltar+pwall
-        write(222,'(10f15.7)')zpos,(high-low)*densprof(i,1:nsp)/(Nconf*2*deltar*volumen_r)
-     enddo
-     close(222)
+      call normdenspr
   endif
 
   !
   ! Recover device values for S(Q) and particle histograms
   !
-  sqf(:) = sqf_d(:)
+  sqf(1:nqmax) = sqf_d(1:nqmax)
+  
   if (rcl>0) sqfcl(:) = sqfcl_d(:)
   sqfp(1:nqmax,1:nsp) = sqfp_d(1:nqmax,1:nsp)
+  
   write(*,"(/60('-')/' ** End: Total GPU time ',f15.7,' secs **')") gptime(stopEvent,startEvent)
   !
   ! destroy timing events
   istat = cudaEventDestroy(startEvent)
   istat = cudaEventDestroy(stopEvent)
-  Open(99,file=fname99)
   !
-  ! Printout S(Q)'s 
-  ! 
-
-  open(100,file='sq.dat')
-  open(110,file='sqmix.dat')
-  x1 = (real(ntype(1))/real(Nmol))
-  x2 = (real(ntype(2))/real(Nmol))
-  do i=1, nqmax
-     if (nsp == 2) then
-        s11 = x1*sqfp(i,1)/(ntype(1)*Nconf*real(nq(i)))
-        s22 = x2*sqfp(i,2)/(ntype(2)*Nconf*real(nq(i)))
-        s12 = 0.5*(sqf(i)/(Nmol*Nconf*real(nq(i))) - s11 - s22)
-        scc = x2**2*s11+x1**2*s22-2*x1*x2*s12
-        write(100,'(6f15.7,i12)')i*dq,sqf(i)/(Nmol*Nconf*real(nq(i)))&
-             &,scc,s11,s22,s12,nq(i)
-     else
-        write(100,'(2f15.7,i12)')i*dq,sqf(i)/(Nmol*Nconf*real(nq(i))),nq(i)
-     endif
-     write(110,'(7f15.7)')i*dq,(sqfp(i,j)/(ntype(j)*Nconf&
-          &*real(nq(i))),j=1,nsp)
-  end do
+  ! Print out S(Q)'s
+  !
+  call printSQ(Nmol)
   do i = 1, nsp
      write(*,'(" ** ",i6," atoms of type ",i2)')ntype(i), i
   end do

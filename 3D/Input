@@ -1,4 +1,4 @@
-10 3   ! No. of configurations, dimensionality
+100 3   ! No. of configurations, dimensionality
 216000 .f. 1.0d-15 .true.
 0.5 1 0.0005 5.25 5 6 100   ! g(r) grid, trajectory key, time step, cluster rcl, min. cluster size, grid for cluster distro, min cluster size for writing traj 
 0.2 8.0  4.0     ! max Q for full sampling, max Q, sigma for reduced units

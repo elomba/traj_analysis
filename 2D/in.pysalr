@@ -1,0 +1,138 @@
+# 3d Lennard-Jones melt
+
+units		real
+atom_style	charge
+dimension 2
+
+# Define initial configuration 
+
+# variable    x equal 400
+# variable    y equal 400
+# lattice     sq 4.0
+# region      box block 0 $x 0 $y -0.5 0.5
+# create_box  1 box
+# create_atoms 1 box
+variable dens equal 0.008
+variable latconst equal round(sqrt(1.0/${dens}))
+variable N equal 40000
+variable nrep equal round(sqrt(${N}))
+lattice 	sq ${latconst}
+region	box block 0 1 0 1  -0.05 0.05  units lattice
+create_box	2 box
+create_atoms 1 box
+replicate ${nrep} ${nrep} 1
+
+#create_atoms  1 random 2000 13487 NULL overlap 3.0 maxtry 5000
+
+#read_restart restart.beg
+
+# define atom properties 
+#
+# Loop to assign 1/3 of the atoms to type B
+label loop
+variable a loop ${N}
+variable rest equal ${a}%3
+if "${rest} == 0" then "set atom ${a} type 2"
+
+next a
+jump SELF loop
+
+#read_restart restart.beg
+
+mass            1 1.0
+mass            2 1.0
+
+set type 1 charge               0.0
+set type 2 charge               0.0
+
+
+
+
+variable tstep equal 1.0
+
+timestep ${tstep}
+
+write_dump all atom init.lammpstrj modify scale no
+
+variable Tdamp equal 100*${tstep}
+
+group A type 1
+group B type 2
+
+variable Nrun equal 20000
+variable Nsnaps equal 100
+variable Nsnaps2 equal 100
+variable Nequil equal 50000
+variable Nrelax equal 2000
+variable Nf equal 200
+variable Nther equal 10*${Nf}
+variable Ne equal 1
+variable Nr equal ${Nf}/${Ne}
+variable Ndump equal ${Nrun}/${Nsnaps}
+variable Ndump2 equal ${Nrun}/${Nsnaps2}
+variable Nr_rdf equal 0.5*${Nrun}/${Ne}
+
+
+variable Text equal 100.0
+variable Text2 equal 200.0
+
+velocity all create  ${Text2} 123456
+
+# Define force field
+
+variable Rc equal 100.0
+variable Nint equal 100000
+pair_style      python ${Rc}
+pair_coeff      * * py_pot.SALR 1 2
+shell rm -f salr11.dat
+shell rm -f salr12.dat
+shell rm -f salr22.dat
+pair_write 1 1 ${Nint} rsq 0.000001 ${Rc} salr11.dat SALR11
+pair_write 1 2 ${Nint} rsq 0.000001 ${Rc} salr12.dat SALR12
+pair_write 2 2 ${Nint} rsq 0.000001 ${Rc} salr22.dat SALR22
+pair_style  table linear ${Nint}
+pair_coeff 1 1 salr11.dat SALR11 ${Rc}
+pair_coeff 1 2 salr12.dat SALR12 ${Rc}
+pair_coeff 2 2 salr22.dat SALR22 ${Rc}
+
+neighbor	2.0 bin
+neigh_modify	every 20 delay 0 check yes
+fix 2d all enforce2d
+
+
+thermo_style custom step temp evdwl epair ecoul elong pe etotal press
+thermo		50
+fix integrate all nvt temp ${Text2} ${Text} ${Tdamp}
+#fix integrate all nve
+
+#compute msd A msd com yes
+#fix msd A ave/time 1 1 500 c_msd[4] file A.msd
+
+#compute msdm B msd com yes
+#fix msdm B ave/time 1 1 500 c_msdm[4] file B.msd
+
+
+
+#compute rdf all rdf 1000  1 1 
+#fix rdf all ave/time 50 100000 5000000 c_rdf[*] file 2dlj.rdf mode vector
+
+#fix avtem all ave/time 1 ${Nther} ${Nther}  c_thermo_temp c_thermo_press  c_thermo_pe file thermoout.dat ave running
+
+#dump trj1 all custom ${Ndump} equil.lammpstrj  id type id x y z vx vy vz
+#dump_modify trj1 sort id
+
+run ${Nequil}
+
+unfix integrate
+fix integrate all nvt temp ${Text} ${Text} ${Tdamp}
+
+
+#undump trj1
+
+dump trj1 all custom ${Ndump} run.lammpstrj  id type id x y z vx vy vz 
+dump_modify trj1 sort id
+
+dump ncd all netcdf ${Ndump2} run.nc  id type id x y z vx vy vz
+
+run		${Nrun}
+write_restart   restart.fin

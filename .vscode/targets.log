@@ -6,7 +6,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Dec 18 11:31:11 2023
+ 
+# Make data base, printed on Tue Dec 19 19:59:12 2023
 
 # Variables
 
@@ -63,7 +64,7 @@ g16root = /usr/local
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-d039318d-5778-4d2c-a27c-b792f05db48a.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-f9efe440-dd2b-49af-89c6-c600f7d60e2b.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -153,6 +154,8 @@ SSH_CLIENT = 10.5.65.99 56832 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
+VSCODE_L10N_BUNDLE_LOCATION = 
+# environment
 BROWSER = /home/enrique/.vscode-server/bin/0ee08df0cf4527e40edc9aa28f4b5bd38bbff2b2/bin/helpers/browser.sh
 # environment
 VSCODE_HANDLES_SIGPIPE = true
@@ -193,7 +196,7 @@ OBJ_CORE = general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o In
 # environment
 MOTD_SHOWN = pam
 # variable set hash-table stats:
-# Load=91/1024=9%, Rehash=0, Collisions=15/126=12%
+# Load=92/1024=9%, Rehash=0, Collisions=15/127=12%
 
 # Pattern-specific Variable Values
 
@@ -201,9 +204,9 @@ MOTD_SHOWN = pam
 
 # Directories
 
-# . (device 57, inode 16371392): 46 files, no impossibilities.
+# . (device 57, inode 16371392): 23 files, no impossibilities.
 
-# 46 files, no impossibilities in 1 directories.
+# 23 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -219,14 +222,11 @@ MOTD_SHOWN = pam
 
 # Files
 
-Definitions.o: Definitions.f90
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'Definitions'
-#  Last modified 2023-12-16 00:48:27.345590073
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 22):
-	$(FC)  -c $(FCOPTS) $< -o $@
+# Not a target:
+Definitions.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 all: general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o mainsubs.o trj_analysis.o ex-scan.o
 #  Command line target.
@@ -240,26 +240,16 @@ all: general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o C
 	$(FC) $(LKOPTS) -o trj_analysis.exe $(OBJ_CORE)  $(LKLIBS)
 
 # Not a target:
-netcdflib.f90:
-#  Implicit rule search has been done.
-#  Last modified 2023-12-16 00:08:42.188446557
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
 trj_analysis.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
-netcdflib.o: netcdflib.f90
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'netcdflib'
-#  Last modified 2023-12-16 00:48:25.499589962
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 22):
-	$(FC)  -c $(FCOPTS) $< -o $@
+# Not a target:
+netcdflib.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 general.f90:
@@ -278,7 +268,6 @@ gpucodes.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
- 
 
 # Not a target:
 Makefile:
@@ -296,9 +285,28 @@ Cells.o:
 general.o: general.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'general'
-#  Last modified 2023-12-16 00:48:22.229589765
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+ 
+#  Needs to be updated (-q is set).
+# automatic
+# @ := general.o
+# automatic
+# % := 
+# automatic
+# * := general
+# automatic
+# + := general.f90
+# automatic
+# | := 
+# automatic
+# < := general.f90
+# automatic
+# ^ := general.f90
+# automatic
+# ? := general.f90
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
 #  recipe to execute (from 'Makefile', line 22):
 	$(FC)  -c $(FCOPTS) $< -o $@
 
@@ -335,20 +343,6 @@ ex-scan.o:
 	$(CC) -O4 --std c++14 -c ex-scan.cu
 
 # Not a target:
-CPUcodes.f90:
-#  Implicit rule search has been done.
-#  Last modified 2023-12-16 01:14:21.656683596
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
-Definitions.f90:
-#  Implicit rule search has been done.
-#  Last modified 2023-12-16 00:08:42.166446556
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
 .f90:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -360,47 +354,26 @@ DBscan.o:
 #  Modification time never checked.
 #  File has not been updated.
 
-CPUcodes.o: CPUcodes.f90
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'CPUcodes'
-#  Last modified 2023-12-16 00:48:28.150590121
-#  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := CPUcodes.o
-# automatic
-# % := 
-# automatic
-# * := CPUcodes
-# automatic
-# + := CPUcodes.f90
-# automatic
-# | := 
-# automatic
-# < := CPUcodes.f90
-# automatic
-# ^ := CPUcodes.f90
-# automatic
-# ? := CPUcodes.f90
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
-#  recipe to execute (from 'Makefile', line 22):
-	$(FC)  -c $(FCOPTS) $< -o $@
+# Not a target:
+CPUcodes.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # files hash-table stats:
-# Load=21/1024=2%, Rehash=0, Collisions=2/58=3%
+# Load=18/1024=2%, Rehash=0, Collisions=2/46=4%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 60 / storage = 640 B / avg = 10 B
-# current buf: size = 8162 B / used = 640 B / count = 60 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 45 / storage = 437 B / avg = 9 B
+# current buf: size = 8162 B / used = 437 B / count = 45 / avg = 9 B
 
-# strcache performance: lookups = 92 / hit rate = 34%
+# strcache performance: lookups = 60 / hit rate = 25%
 # hash-table stats:
-# Load=60/8192=1%, Rehash=0, Collisions=8/92=9%
-# Finished Make data base on Mon Dec 18 11:31:11 2023
+# Load=45/8192=1%, Rehash=0, Collisions=5/60=8%
+# Finished Make data base on Tue Dec 19 19:59:12 2023
 
  

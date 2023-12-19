@@ -58,11 +58,20 @@ contains
     cellxd = cellx
     cellyd = celly
     cellzd = cellz
-    if (min(maxi,maxj,maxk) < 3) then
-       print *, " *** Error: box too small for link cell method "
-       use_cell = .false.
-       return
-    end if
+    if (ndim==3) then
+       if (min(maxi,maxj,maxk) < 3) then
+        print *, " *** Error: box too small for link cell method "
+          use_cell = .false.
+        return
+      end if
+   else
+      if (min(maxi,maxj) < 3) then
+         print *, " *** Error: box too small for link cell method "
+           use_cell = .false.
+         return
+      Endif
+   endif
+
     l=0
     if (ndim ==3) then
        Do i=0,maxi-1

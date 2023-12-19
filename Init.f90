@@ -119,14 +119,15 @@ Subroutine InitStorage(Nmol,nsp)
      if (mod(lmaxy,4).ne.0) lmaxy = lmaxy -4 + mod(lmaxy,4)
      if (mod(lmaxz,4).ne.0) lmaxz = lmaxz -4 + mod(lmaxz,4)
      tBlock = dim3(lmaxx/grid%x+1,lmaxy/grid%y+1,lmaxz/grid%z+1)
+     nqmin = min(lmaxx,lmaxy,lmaxz)
   else
-     grid = dim3(8,8,1)
-     if (mod(lmaxx,8).ne.0) lmaxx = lmaxx -8 + mod(lmaxx,8)
-     if (mod(lmaxy,8).ne.0) lmaxy = lmaxy -8 + mod(lmaxy,8)
+     grid = dim3(16,16,1)
+     if (mod(lmaxx,16).ne.0) lmaxx = lmaxx -16 + mod(lmaxx,16)
+     if (mod(lmaxy,16).ne.0) lmaxy = lmaxy -16 + mod(lmaxy,16)
      tBlock = dim3(lmaxx/grid%x+1,lmaxy/grid%y+1,1)
+     nqmin = min(lmaxx,lmaxy)
   endif
   fk(:) = 2*pi/sidel(:)
-  nqmin = min(lmaxx,lmaxy,lmaxz)
   if (nqmin == 0) then
      nqmin = 1
      lmaxx = 1
@@ -134,7 +135,6 @@ Subroutine InitStorage(Nmol,nsp)
      lmaxz = 1
   endif
   qmin = lmaxx*fk(1)
-!  print *, ' bien1'
   Allocate(sqf(nqmax),sqfcl(nqmax),sqfp(nqmax,nsp),nq(nqmax))
   Allocate(histomix(lsmax,nsp,nsp),histomixi(lsmax,nsp,nsp)&
        &,gcluster(lsmax),gclustav(lsmax),gclcl(lsmax),rhoclus(0:lsmax),&
@@ -173,6 +173,8 @@ Subroutine InitStorage(Nmol,nsp)
               end do
            end do
         end do
+        write(*,"(' *** Using ',i4,'x',i4,'x',i4,' vectors **'/)")lmaxx,lmaxy,lmaxz
+        nq(indm+1:nqmax) = 3
      else
         do i=0,lmaxx-1
            do j=0,lmaxy-1
@@ -186,16 +188,21 @@ Subroutine InitStorage(Nmol,nsp)
               endif
            end do
         end do
+        nq(indm+1:nqmax) = 2
+        write(*,"(' *** Using ',i4,'x',i4,' vectors **'/)")lmaxx,lmaxy
      end if
      qmin2 = qmin**2
-     nq(indm+1:nqmax) = 3
      write(*,"(/' *** Averaging over all q-vectors for q <',f10.6,' A^-1 **')") qmin
-     write(*,"(' *** Using ',i4,'x',i4,'x',i4,' vectors **'/)")lmaxx,lmaxy,lmaxz
   else
-     nq(1:nqmax) = 3
+     if (ndim==3) then
+         nq(1:nqmax) = 3
+     else
+      nq(1:nqmax) = 2
+     endif
      nqmin = 1
      write(*,"(/' *** Averaging over (100), (010) and (001)  q-vectors  **'/)") 
   endif
+
   ndr = nint(sidel(1)/2.0/deltar)
   lty(:) = 0
   do i=1, Nmol

@@ -1,0 +1,1 @@
+/home/enrique/files/Trabajo/newSALR/3D/mixt/sep/large/2c_sep/run.nc

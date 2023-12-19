@@ -278,15 +278,15 @@ contains
              sumcpz = sumcpz + cos(rkz)
              sumspz = sumspz + sin(rkz)
           end do
-          sumcx = sumcx+sumspx
+          sumcx = sumcx+sumcpx
           sumsx = sumsx+sumspx
-          sumcy = sumcy+sumspy
+          sumcy = sumcy+sumcpy
           sumsy = sumsy+sumspy
-          sumcz = sumcz+sumspz
+          sumcz = sumcz+sumcpz
           sumsz = sumsz+sumspz
           suma = (sumcpx**2+sumspx**2+sumcpy**2+sumspy**2+sumcpz**2+sumspz**2)
           ia = atomicadd(sqfp(k,j),suma)
-       end do
+         end do
        sqf(k) = sqf(k)+(sumcx**2+sumsx**2+sumcy**2+sumsy**2+sumcz**2+sumsz**2)
     endif
   end subroutine sqfact
@@ -294,7 +294,7 @@ contains
   attributes (global) subroutine sqfact2(r_d,Nmol,dim,itype,ntype,ipos,fk,sqf,sqfp,nsp,kmax,kmin)
     integer, value, intent(IN) :: Nmol, dim, nsp,  kmax, kmin
     integer, intent(IN) :: itype(Nmol), ntype(nsp),ipos(nsp,Nmol)
-    real, dimension(3,Nmol), intent(IN) :: r_d
+    real, dimension(2,Nmol), intent(IN) :: r_d
     real (kind=4), intent(INOUT) :: sqf(kmax),sqfp(kmax,nsp)
     real (kind=4) :: rkx, rky, rkz, fk1, fk2, fk3, kf1, kf2, kf3, suma
     real (kind=8) :: sumcx, sumsx, sumcy, sumsy, sumcpx, sumspx, sumcpy, sumspy
@@ -324,9 +324,9 @@ contains
              sumcpy = sumcpy + cos(rky)
              sumspy = sumspy + sin(rky)
           end do
-          sumcx = sumcx+sumspx
+          sumcx = sumcx+sumcpx
           sumsx = sumsx+sumspx
-          sumcy = sumcy+sumspy
+          sumcy = sumcy+sumcpy
           sumsy = sumsy+sumspy
           suma = (sumcpx**2+sumspx**2+sumcpy**2+sumspy**2)
           ia = atomicadd(sqfp(k,j),suma)
@@ -385,7 +385,7 @@ contains
     attributes (global) subroutine sqf2D(r_d,Nmol,dim,itype,ntype,ipos,fk,sqf,sqfp,nsp,kmax,q2max,dq)
     integer, intent(IN) :: itype(Nmol),  ntype(nsp), ipos(nsp,Nmol)
     integer, value, intent(IN) :: Nmol, dim, nsp, kmax
-    real, dimension(3,Nmol), intent(IN) :: r_d
+    real, dimension(2,Nmol), intent(IN) :: r_d
     real (kind=4), intent(INOUT) :: sqf(kmax),sqfp(kmax,nsp)
     real (kind=4) :: rkx, rky, rkz, fk1, fk2, fk3, kf1, kf2, kf3, tsum, q, suma
     real (kind=8) :: sumcx, sumsx, sumcpx, sumspx, q2
@@ -397,7 +397,6 @@ contains
     ky = (blockidx%y-1)*blockdim%y + threadidx%y-1
     fk1 = fk(1)
     fk2 = fk(2)
-    fk3 = fk(3)
     kf1 = kx*fk1
     kf2 = ky*fk2
     q2 = kf1*kf1+kf2*kf2
@@ -413,7 +412,7 @@ contains
              i = ipos(j,it)
              rkx = r_d(1,i)*kf1
              rky = r_d(2,i)*kf2
-             sumcpx = sumcpx + cos(rkx+rky)
+             sumcpx = sumcpx + sin(rkx+rky+1.5707963267948966)
              sumspx = sumspx + sin(rkx+rky)
           end do
           sumcx = sumcx+sumcpx
