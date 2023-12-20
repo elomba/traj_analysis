@@ -11,14 +11,10 @@
 ! the z-direction is ommited, even it is still read in the trajectory netcdf file. 
 !
 ! E. Lomba, Madrid, Dec. 2022
-
+!
 program trj_analysis
   use myncdf
   !
-  ! Rename variables from read_nc NetCDF file reading routines
-  !
-  !use configuration, only : org, cell_in=>cell, r_in=>r, v_in=>v,&
-  !     & tstep=>scale, ity_in=>ity, nstep_in=>step, natoms
   !
   ! Module for NetCDF standard f90 library
   !
@@ -28,7 +24,6 @@ program trj_analysis
   Use dev_def
   Use gpcodes
   use gpucells
-!  Use cpucodes
   Use dbscan
   use clusters
   use thrust
@@ -193,16 +188,10 @@ program trj_analysis
      ekin = 0.5d0*ekin
      ecaver = ecaver + ekin
      If (keytrj > 0) Then
-        Tfact = (natms-nmzero-1)*ndim
-        if (UnitR) Then
-           taver = 2*ecaver/(Tfact*Iconf)
-           temperature = 2*ekin/(Tfact)
-        Else
-           taver = 2*ecaver*(aunit/tunit)**2/(Tfact*Rgas*Iconf)
-           temperature = 2*ekin*(aunit/tunit)**2/(Tfact*Rgas)
-        Endif
+      Tfact = (natms-nmzero-1)*ndim
+      taver = 2*ecaver*(aunit/tunit)**2/(Tfact*Rgas*Iconf)
+      temperature = 2*ekin*(aunit/tunit)**2/(Tfact*Rgas)
      Endif
-     ! Cuda kernel calls
      !
      ! Call RDF
      !
@@ -223,25 +212,28 @@ program trj_analysis
      call SQcalc(Nmol)
      t4 = gptime(stopEvent,startEvent) 
      tsQ = tsQ + t4-t3
+     !
      if (rcl > 0) then
-        ! Create cluster objects (reallocate memory for each
-        ! configuration) 
-        !
+      !
+      ! Identify clusters
+      !
         call cluster_analysis(Iconf,Nmol)
      endif
+     !
      ! Periodic output
+     !
      If (Mod(Iconf-1,5).Eq.0) Then
         call cpu_time(cpu1)
         Write(*,"(/' ** Working on MD step no. ',i8,' cpu time=',f15.2&
              &/)") nstep, cpu1-cpu0
         cpu0 = cpu1
-        write(*,"(' ** Kinetic energy=',f15.4,' Kcal/mol, average=',f15.4,'Kcal/mol')")0.00198717*ekin*(aunit/tunit)**2/Rgas ,0.00198717*ecaver*(aunit/tunit)**2/Rgas/Iconf 
+        write(*,"(' ** Kinetic energy=',f15.4,' Kcal/mol, average=',f15.4,'Kcal/mol')")kelvintokcal*ekin*(aunit/tunit)**2/Rgas ,0.00198717*ecaver*(aunit/tunit)**2/Rgas/Iconf 
         if (rcl>0) then
-           write(*,"(' ** Cluster kinetic energy=',f15.4,' Kcal/mol, average=',f15.4,'Kcal/mol')")0.00198717*ekincl*(aunit/tunit)**2/Rgas, 0.00198717*ekclaver*(aunit/tunit)**2/Rgas/Iconf
+           write(*,"(' ** Cluster kinetic energy=',f15.4,' Kcal/mol, average=',f15.4,'Kcal/mol')")kelvintokcal*ekincl*(aunit/tunit)**2/Rgas, 0.00198717*ekclaver*(aunit/tunit)**2/Rgas/Iconf
            write(*,"(' ** Internal cluster kinetic energy=',f15.4,'&
                 & Kcal/mol, average=',f15.4,'Kcal&
-                &/mol')")0.00198717*ekincls*(aunit/tunit)**2/Rgas,&
-                & 0.00198717*ekinclsav*(aunit/tunit)**2/Rgas/Iconf
+                &/mol')")kelvintokcal*ekincls*(aunit/tunit)**2/Rgas,&
+                & kelvintokcal*ekinclsav*(aunit/tunit)**2/Rgas/Iconf
         endif
         If (keytrj > 0) then
            if (rcl > 0) then
@@ -249,15 +241,9 @@ program trj_analysis
                Write(*,"(' ** Average cluster temperature =',f10.4&
                    &,' K')") 2*ekclaver*(aunit/tunit)**2/(Tfact*Rgas*Iconf)
             endif
-           if (UnitR) Then
-              Write(*,"(' ** Temperature*=',f10.4&
-                   &,' average=',f10.4,' density*=',f10.6&
-                   &)")temperature,taver,densty
-           Else
-              Write(*,"(' ** Temperature=',f10.4&
+            Write(*,"(' ** Temperature=',f10.4&
                    &,' K average=',f10.4,'K density=',f10.6' 1&
                    &/A^3')")temperature,taver,densty
-           endif
         else
            Write(*,"(' Density*=',f10.6&
                 &)")natms/volumen
@@ -278,7 +264,9 @@ program trj_analysis
         print *, " ··Time config in/out  ", tread/iconf
      Endif
   end Do
+  !
   ! Normalize density profiles computed along the non-periodic dimension
+  !
    if (idir>0) then
       call normdenspr
   endif
@@ -287,9 +275,8 @@ program trj_analysis
   ! Recover device values for S(Q) and particle histograms
   !
   sqf(1:nqmax) = sqf_d(1:nqmax)
-  
-  if (rcl>0) sqfcl(:) = sqfcl_d(:)
   sqfp(1:nqmax,1:nsp) = sqfp_d(1:nqmax,1:nsp)
+  if (rcl>0) sqfcl(:) = sqfcl_d(:)
   
   write(*,"(/60('-')/' ** End: Total GPU time ',f15.7,' secs **')") gptime(stopEvent,startEvent)
   !

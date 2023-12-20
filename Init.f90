@@ -6,13 +6,15 @@ subroutine trans_ncdfinput(Nmol, Iconf)
        & tstep=>scale, ity_in=>ity, nstep_in=>step, natoms
   use comun, only : Vel, r, cell, sidel, side, volumen, itype, bscat, tunit&
        &, tuniti,  ntype, masa, bsc, mat, nstep, natms, ndim,&
-       & vector_product, UnitR, keytrj
+       & vector_product, UnitR, keytrj, nsp
   implicit none
   integer, intent(in) :: Iconf, Nmol
-  Integer :: i
+  Integer :: i, j, it
+  Integer, dimension(:), allocatable :: counter, nct
   if (natoms .ne. Nmol) then
      stop(' *** Error : no. of atoms in input file and trajectory file differ !!!!')
   end if
+  allocate(nct(nsp),counter(nsp))
   nstep = nstep_in(1)
   if (Iconf == 1) then
      !Define inital vars and checks
@@ -25,33 +27,43 @@ subroutine trans_ncdfinput(Nmol, Iconf)
   do i=1,ndim
      cell(i,i) = cell_in(i,1)
      volumen = volumen*cell(i,i)
-     if (allocated(v_in)) then
-        vel(i,1:Nmol) = v_in(i,1:Nmol,1)
-     else
-        keytrj = 0
-     endif
   end do
-  if (keytrj >0) then
-     if (.not. UnitR) then
-        Vel(:,:) =  Vel(:,:)*tunit/tuniti
-        !           Force(:,:) = Force(:,:)*(tunit/tuniti)**2
-     Endif
-  end if
-  !
-  ! Read in and fold coordinates in simulation box
-  !
-  forall (i=1:ndim)
-     r(i,1:Nmol) = r_in(i,1:Nmol,1)!-org(i,1)
-     r(i,1:Nmol) = r(i,1:Nmol) -sidel(i)*int(r(i,1:Nmol)&
-          &/sidel(i))
-  end forall
-  itype(1:Nmol) = ity_in(1:nmol,1)
+  if (allocated(v_in)) then
+   keytrj > 0
+  else
+   keytrj = 0
+  endif
+   !
+  ! Remap coordinates so as to have first ntype(1) particles in contiguous positions, followed  
+  ! by ntype(2) particles and so on .. and transform from netcdf format to local vars
+  ! 
   ntype(:) = 0
   do i=1,Nmol
-     masa(i) = mat(itype(i))
-     bscat(i) = bsc(itype(i))
-     ntype(itype(i)) = ntype(itype(i))+1
+   ntype(ity_in(i,1)) = ntype(ity_in(i,1))+1
+  end do 
+  nct(1)=0
+  do i=2,nsp
+   nct(i) = nct(i-1)+ntype(i-1)
+  enddo
+  counter(:) = nct(:)
+  do i=1, Nmol
+   it = ity_in(i,1)
+   counter(it) = counter(it)+1
+   j= counter(it)
+   !
+   ! NOTE: when ndim=2, z component of r_in,v_in is discarded 
+   !
+   if (keytrj>0) vel(1:ndim,j) = v_in(1:ndim,i,1)*tunit/tuniti
+     r(1:ndim,j) = r_in(1:ndim,i,1)
+     r(1:ndim,j) = r(1:ndim,j) -sidel(1:ndim)*int(r(1:ndim,j)&
+          &/sidel(1:ndim))
+     itype(j) = it
+  enddo 
+  do i=1,nsp
+     masa(nct(i)+1:nct(i)+ntype(i)) = mat(i)
+     bscat(nct(i)+1:nct(i)+ntype(i)) = bscat(i)
   end do
+  
 end subroutine trans_ncdfinput
 
 subroutine reset_struct

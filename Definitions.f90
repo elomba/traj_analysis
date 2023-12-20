@@ -36,7 +36,7 @@ Module Comun
   Real (myprec), Dimension(:), Allocatable ::  bsc, bscat, masa, mat
   Real (myprec) :: q(npmx),Deltar,dr,cq,dq,cr,tuniti
   Real (myprec), Parameter :: pi=3.1415926535898D0,fconv=4.135,Rgas&
-       &=8.3144d7, aunit=1.0d-8,tunit=1.0d-12
+       &=8.3144d7, kelvintokcal=0.00198717,aunit=1.0d-8,tunit=1.0d-12
   Real (myprec), Dimension(3,3) :: cell
   Real (myprec), Dimension(3) :: sidel, rlow, rup
   Real (myprec) :: weight, charge, tstep, side, kmax, volumen, sigma,&

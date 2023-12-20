@@ -333,9 +333,9 @@ subroutine printrdf(rcl, lsmax)
   integer :: i, j, l, k
   Open(99,file=fname99)
   if (rcl>0) then
-   write(99,"('#       r',16x,'g_cl(r)        g_cl-cl(r)',5x,6('g_',2i1,'(r)',11x:))")(((j,k),k=j,nsp),j=1,nsp)
+   write(99,"('#       r',16x,'g_cl(r)        g_cl-cl(r)',5x,6('g_',2i1,'(r)',8x:))")(((j,k),k=j,nsp),j=1,nsp)
   else   
-   write(99,"('#       r',12x,6('g_',2i1,'(r)',4x:))")(((j,k),k=j,nsp),j=1,nsp)
+   write(99,"('#       r',16x,6('g_',2i1,'(r)',9x:))")(((j,k),k=j,nsp),j=1,nsp)
   end if
   Do i = 1, lsmax-2
      ri = i*deltar
@@ -527,9 +527,9 @@ subroutine normdenspr
   if (nsp==2) then
    write(100,"('#           Q        S_NN(Q)          S_cc(Q)       S_11(Q)        S_22(Q)           S_12(Q)         n(Q)')")
   else
-   write(100,"('#           Q       S_NN(Q) ')")
+   write(100,"('#           Q       S_NN(Q)          n(Q)')")
   end if
-  write(110,"('#       Q',12x,6('S_',2i1,'(Q)',4x:))")((j,j),j=1,nsp)
+  write(110,"('#       Q',14x,6('S_',2i1,'(Q)',9x:))")((j,j),j=1,nsp)
   do i=1, nqmax
      if (nsp == 2) then
         s11 = x1*sqfp(i,1)/(ntype(1)*Nconf*real(nq(i)))
