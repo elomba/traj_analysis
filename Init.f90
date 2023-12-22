@@ -29,7 +29,7 @@ subroutine trans_ncdfinput(Nmol, Iconf)
      volumen = volumen*cell(i,i)
   end do
   if (allocated(v_in)) then
-   keytrj > 0
+   keytrj = 1
   else
    keytrj = 0
   endif

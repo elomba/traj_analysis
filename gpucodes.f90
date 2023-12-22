@@ -153,7 +153,7 @@ contains
     integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
-    iti = itype(i)
+      iti = itype(i)
        xi = r(1,i)
        yi = r(2,i)
        zi = r(3,i)
@@ -167,14 +167,53 @@ contains
           rr2= xd*xd+yd*yd+zd*zd
           If (rr2.Lt.side2) Then
              itj = itype(j)
-             rr = sqrt(rr2)
+             rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix(ind,itj,iti),1)
-             if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+             !if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
           endif
        Enddo
     end if
   end subroutine rdf
+
+  attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nsp,lsmax,itype&
+       &,side2,sidel,deltar)
+    integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
+    integer, intent(IN) :: itype(Nmol)
+    integer i, j, ind, ia, fact, iti, itj
+    real ::  rr2, rr, xi, yi, zi, xd, yd, zd
+    real, dimension(3) :: rv
+    real, value, intent(IN) :: side2, deltar
+    real, intent(IN) :: sidel(3)
+    real, dimension(dim,Nmol), intent(IN) :: r
+    integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
+    integer, shared :: histomix_s(200,2,2)
+    histomix_s(:,:,:) = 0
+    i = (blockidx%x-1) * blockdim%x + threadidx%x
+    if (i<=Nmol-1) then
+      iti = itype(i)
+       xi = r(1,i)
+       yi = r(2,i)
+       zi = r(3,i)
+       Do j=i+1,Nmol
+          xd = r(1,j)-xi
+          yd = r(2,j)-yi
+          zd = r(3,j)-zi
+          xd = xd -sidel(1)*nint(xd/sidel(1))
+          yd = yd -sidel(2)*nint(yd/sidel(2))
+          zd = zd -sidel(3)*nint(zd/sidel(3))
+          rr2= xd*xd+yd*yd+zd*zd
+          If (rr2.Lt.side2) Then
+             itj = itype(j)
+             rr = __fsqrt_rn(rr2)
+             ind = Nint(rr/deltar)
+             ia = atomicadd(histomix_s(ind,itj,iti),1)
+             !if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+          endif
+       Enddo
+       call syncthreads()
+    end if
+  end subroutine rdf_sh
 
   attributes (global) subroutine rdf2(r,Nmol,dim,histomix,nsp,lsmax,itype&
        &,side2,sidel,deltar)
@@ -200,7 +239,7 @@ contains
           rr2= xd*xd+yd*yd
           If (rr2.Lt.side2) Then
              itj = itype(j)
-             rr = sqrt(rr2)
+             rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix(ind,itj,iti),1)
              if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
@@ -259,6 +298,7 @@ contains
        kf1 = k*fk1
        kf2 = k*fk2
        kf3 = k*fk3
+       i = 0
        do j=1, nsp
           sumcpx = 0
           sumspx = 0
@@ -267,16 +307,16 @@ contains
           sumcpz = 0
           sumspz = 0
           do it=1, ntype(j)
-             i = ipos(j,it)
+             i = i + 1
              rkx = r_d(1,i)*kf1
              rky = r_d(2,i)*kf2
              rkz = r_d(3,i)*kf3
-             sumcpx = sumcpx + cos(rkx)
-             sumspx = sumspx + sin(rkx)
-             sumcpy = sumcpy + cos(rky)
-             sumspy = sumspy + sin(rky)
-             sumcpz = sumcpz + cos(rkz)
-             sumspz = sumspz + sin(rkz)
+             sumcpx = sumcpx + __cosf(rkx)
+             sumspx = sumspx + __sinf(rkx)
+             sumcpy = sumcpy + __cosf(rky)
+             sumspy = sumspy + __sinf(rky)
+             sumcpz = sumcpz + __cosf(rkz)
+             sumspz = sumspz + __sinf(rkz)
           end do
           sumcx = sumcx+sumcpx
           sumsx = sumsx+sumspx
@@ -310,13 +350,14 @@ contains
        sumsy = 0
        kf1 = k*fk1
        kf2 = k*fk2
+       i = 0
        do j=1, nsp
           sumcpx = 0
           sumspx = 0
           sumcpy = 0
           sumspy = 0
           do it=1, ntype(j)
-             i = ipos(j,it)
+             i = i + 1
              rkx = r_d(1,i)*kf1
              rky = r_d(2,i)*kf2
              sumcpx = sumcpx + cos(rkx)
@@ -361,16 +402,17 @@ contains
        sumsx = 0
        q = sqrt(q2)
        ind = nint(q/dq)
+       i = 0
        do j=1, nsp
           sumcpx = 0
           sumspx = 0
           do it=1, ntype(j)
-             i = ipos(j,it)
+             i = i + 1
              rkx = r_d(1,i)*kf1
              rky = r_d(2,i)*kf2
              rkz = r_d(3,i)*kf3
-             sumcpx = sumcpx + cos(rkx+rky+rkz)
-             sumspx = sumspx + sin(rkx+rky+rkz)
+             sumcpx = sumcpx + __cosf(rkx+rky+rkz)
+             sumspx = sumspx + __sinf(rkx+rky+rkz)
           end do
           sumcx = sumcx+sumcpx
           sumsx = sumsx+sumspx
@@ -405,11 +447,12 @@ contains
        sumsx = 0
        q = sqrt(q2)
        ind = nint(q/dq)
+       i = 0 
        do j=1, nsp
           sumcpx = 0
           sumspx = 0
           do it=1, ntype(j)
-             i = ipos(j,it)
+             i = i +1
              rkx = r_d(1,i)*kf1
              rky = r_d(2,i)*kf2
              sumcpx = sumcpx + sin(rkx+rky+1.5707963267948966)
