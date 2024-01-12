@@ -145,7 +145,11 @@ subroutine cluster_analysis(Iconf, Nmol)
   !
   write(188,"('ITEM: TIMESTEP'/I12/'ITEM: NUMBER OF ATOMS'/I12/'ITE&
        &M: BOX BOUNDS pp pp pp')")nstep, nbigcl
-  write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
+  if (ndim==3) then
+   write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
+  else
+   write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim),-0.5,0.5
+  endif
   write(188,"('ITEM: ATOMS id type id x y z')")
   !        write(189,*) " iconf=", iconf
   icl = 0
@@ -167,21 +171,21 @@ subroutine cluster_analysis(Iconf, Nmol)
            rv(1:ndim) = r(1:ndim,ip)
            theta(1:ndim) = 2*pi*rv(1:1dim)/sidel(1:ndim)
            xss(1:ndim) = xss(1:ndim)+cos(theta(1:ndim))
-           sss(:) = sss(:)+sin(theta(:))
-           vcl(:) = vcl(:)+masa(ip)*vel(:,ip)
+           sss(1:ndim) = sss(1:ndim)+sin(theta(1:ndim))
+           vcl(1:ndim) = vcl(1:ndim)+masa(ip)*vel(1:ndim,ip)
            mcl = mcl+masa(ip)
         end do
-        xss(:)=xss(:)/j
-        sss(:)=sss(:)/j
-        theta(:) = atan2(-sss(:),-xss(:))+pi
+        xss(1:ndim)=xss(1:ndim)/j
+        sss(1:ndim)=sss(1:ndim)/j
+        theta(1:ndim) = atan2(-sss(1:ndim),-xss(1:ndim))+pi
         !
         ! Restore origin for centers of mass position to the original coordinate
         !
-        cluster(i)%center(:) =  sidel(:)*theta(:)/(2*pi)+rlow(:)
+        cluster(i)%center(1:ndim) =  sidel(1:ndim)*theta(1:ndim)/(2*pi)+rlow(1:ndim)
         !
         ! Store cluster's center of mass velocity and net mass
         !
-        cluster(i)%vl(:) = vcl(:)/mcl
+        cluster(i)%vl(1:ndim) = vcl(1:ndim)/mcl
         cluster(i)%mass = mcl
         ekcls = 0
         do k = 1, j
@@ -193,7 +197,11 @@ subroutine cluster_analysis(Iconf, Nmol)
      endif
      if (j>=minclsize)then
         icl = icl+1
-        write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(:)
+        if (ndim ==3) then
+         write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(1:npdim)
+        else
+         write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(1:ndim),0.0
+        endif 
      end if
   end do
   ekincl = 0
