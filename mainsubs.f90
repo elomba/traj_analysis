@@ -256,7 +256,7 @@ subroutine cluster_analysis(Iconf, Nmol)
      rclus = rclus +  rcluster
      write(888,'(5f15.7)')i, rclxyz(1:ndim,i)
   end do
-  stop
+  stop(" A ver que pasa ")
   ! Here there are changes 
   ! test 
   ! more changes 
