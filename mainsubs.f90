@@ -145,6 +145,7 @@ subroutine cluster_analysis(Iconf, Nmol)
   !
   write(188,"('ITEM: TIMESTEP'/I12/'ITEM: NUMBER OF ATOMS'/I12/'ITE&
        &M: BOX BOUNDS pp pp pp')")nstep, nbigcl
+       
   if (ndim==3) then
    write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
   else
@@ -169,7 +170,7 @@ subroutine cluster_analysis(Iconf, Nmol)
         do k = 1, j
            ip = cluster(i)%members(k)
            rv(1:ndim) = r(1:ndim,ip)
-           theta(1:ndim) = 2*pi*rv(1:1dim)/sidel(1:ndim)
+           theta(1:ndim) = 2*pi*rv(1:ndim)/sidel(1:ndim)
            xss(1:ndim) = xss(1:ndim)+cos(theta(1:ndim))
            sss(1:ndim) = sss(1:ndim)+sin(theta(1:ndim))
            vcl(1:ndim) = vcl(1:ndim)+masa(ip)*vel(1:ndim,ip)
@@ -198,7 +199,7 @@ subroutine cluster_analysis(Iconf, Nmol)
      if (j>=minclsize)then
         icl = icl+1
         if (ndim ==3) then
-         write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(1:npdim)
+         write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(1:ndim)
         else
          write(188,'(3i10,3f15.7)')icl,nsp+2,icl,cluster(i)%center(1:ndim),0.0
         endif 
