@@ -507,9 +507,9 @@ contains
     endif
   end subroutine sqf3Dcl
 
-  attributes (global) subroutine sqf2Dcl(r_d,Nmol,fk,sqf,kmax,q2max,dq)
-    integer, value, intent(IN) :: Nmol, kmax
-    real, dimension(3,Nmol), intent(IN) :: r_d
+  attributes (global) subroutine sqf2Dcl(dim, r_d,Nmol,fk,sqf,kmax,q2max,dq)
+    integer, value, intent(IN) :: dim, Nmol, kmax
+    real, dimension(dim,Nmol), intent(IN) :: r_d
     real (kind=4), intent(INOUT) :: sqf(kmax)
     real (kind=4) :: rkx, rky, rkz, fk1, fk2, fk3, kf1, kf2, kf3, tsum, q, suma
     real (kind=8) :: sumcx, sumsx, sumcpx, sumspx, q2
