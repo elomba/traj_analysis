@@ -254,12 +254,7 @@ subroutine cluster_analysis(Iconf, Nmol)
      if (indr<=ndr)radii(indr) = radii(indr)+1
      denscl = denscl + cluster(i)%cldens
      rclus = rclus +  rcluster
-   !  write(888,'(i5,5f15.7)')i, rclxyz(1:ndim,i)
   end do
-  !stop(" A ver que pasa ")
-  ! Here there are changes 
-  ! test 
-  ! more changes 
   rclxyzd(:,:) = rclxyz(:,:)
   !
   ! Compute cluster-cluster structure factor
@@ -267,7 +262,7 @@ subroutine cluster_analysis(Iconf, Nmol)
   if (ndim == 3) then
      call sqf3Dcl<<<tBlock,grid>>>(rclxyzd,cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
   else
-     call sqf2Dcl<<<tBlock,grid>>>(rclxyzd,cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
+     call sqf2Dcl<<<tBlock,grid>>>(rclxyzd(1:ndim,1:cluster_id),cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
   end if
   averdens = averdens + denscl/cluster_id
   avradio = avradio + rclus/cluster_id
