@@ -276,7 +276,7 @@ program trj_analysis
   !
   sqf(1:nqmax) = sqf_d(1:nqmax)
   sqfp(1:nqmax,1:nsp) = sqfp_d(1:nqmax,1:nsp)
-  if (rcl>0) sqfcl(:) = sqfcl_d(:)
+  if (rcl>0) sqfcl(1:nqmax) = sqfcl_d(1:nqmax)
   
   write(*,"(/60('-')/' ** End: Total GPU time ',f15.7,' secs **')") gptime(stopEvent,startEvent)
   !
