@@ -254,7 +254,9 @@ subroutine cluster_analysis(Iconf, Nmol)
      if (indr<=ndr)radii(indr) = radii(indr)+1
      denscl = denscl + cluster(i)%cldens
      rclus = rclus +  rcluster
+     write(888,'(5f15.7)')i, rclxyz(1:ndim,i)
   end do
+  stop
   rclxyzd(:,:) = rclxyz(:,:)
   !
   ! Compute cluster-cluster structure factor
