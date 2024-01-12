@@ -146,7 +146,7 @@ subroutine cluster_analysis(Iconf, Nmol)
   write(188,"('ITEM: TIMESTEP'/I12/'ITEM: NUMBER OF ATOMS'/I12/'ITE&
        &M: BOX BOUNDS pp pp pp')")nstep, nbigcl
   write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
-  if (ndim == 2) write(188,"('-0.5 0.5)")
+  if (ndim == 2) write(188,"('-0.5 0.5')")
   write(188,"('ITEM: ATOMS id type id x y z')")
   !        write(189,*) " iconf=", iconf
   icl = 0
@@ -234,8 +234,8 @@ subroutine cluster_analysis(Iconf, Nmol)
   !
   do i=1, cluster_id
      clussize = cluster(i)%clsize
-     clcent(:) =  cluster(i)%center(1:3)
-     rclxyz(:,i) =  clcent(:)
+     clcent(:) =  cluster(i)%center(1:ndim)
+     rclxyz(1:ndim,i) =  clcent(1:ndim)
      rcluster = radius(cluster(i)%members(:),clussize,clcent,sidel)
      cluster(i)%radio = rcluster
      if (ndim==3) then
@@ -269,14 +269,14 @@ subroutine cluster_analysis(Iconf, Nmol)
   ! Determine average cluster density, cluster g(r) and density profiles
   do i = 1, cluster_id
      densav(i) = cldens(ndim,cluster(i)%members(:),cluster(i)%clsize,sidel&
-          &,side2, cluster(i)%center(1:3),0.8*cluster(i)%radio)
+          &,side2, cluster(i)%center(1:ndim),0.8*cluster(i)%radio)
      if (cluster(i)%clsize > minclsize) then
         cmin  = minj(ndim,cluster(i)%members,cluster(i)%clsize&
              &,cluster(i)%center,sidel,side2) 
         call rdfcl(ndim,cluster(i)%members(:),cluster(i)%clsize,sidel&
              &,side2,gcluster,lsmax,deltar,densav(i),cmin)
         call denspcl(ndim,cluster(i)%members(:),cluster(i)%clsize,sidel&
-             &,side2,rhoclus(0:lsmax),lsmax,deltar,cluster(i)%center(1:3))
+             &,side2,rhoclus(0:lsmax),lsmax,deltar,cluster(i)%center(1:ndim))
      endif
   end do
   gclustav(:) = gclustav(:)+gcluster(:)/nbigcl
