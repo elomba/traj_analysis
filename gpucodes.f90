@@ -170,7 +170,7 @@ contains
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix(ind,itj,iti),1)
-             !if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+             if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
           endif
        Enddo
     end if

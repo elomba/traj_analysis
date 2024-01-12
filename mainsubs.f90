@@ -164,9 +164,9 @@ subroutine cluster_analysis(Iconf, Nmol)
         ekcls = 0
         do k = 1, j
            ip = cluster(i)%members(k)
-           rv(:) = r(:,ip)
-           theta(:) = 2*pi*rv(:)/sidel(:)
-           xss(:) = xss(:)+cos(theta(:))
+           rv(1:ndim) = r(1:ndim,ip)
+           theta(1:ndim) = 2*pi*rv(1:1dim)/sidel(1:ndim)
+           xss(1:ndim) = xss(1:ndim)+cos(theta(1:ndim))
            sss(:) = sss(:)+sin(theta(:))
            vcl(:) = vcl(:)+masa(ip)*vel(:,ip)
            mcl = mcl+masa(ip)
