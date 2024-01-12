@@ -279,7 +279,7 @@ subroutine cluster_analysis(Iconf, Nmol)
   !
   ! Cluster-cluster pdf
   !
-  call rdfclcl(ndim,rclxyz(1:3,1:cluster_id),cluster_id,sidel&
+  call rdfclcl(ndim,rclxyz(1:ndim,1:cluster_id),cluster_id,sidel&
        &,side2,gclcl,lsmax,deltar,volumen)
   NTclus = suma
 end subroutine cluster_analysis

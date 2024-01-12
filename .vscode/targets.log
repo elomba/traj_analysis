@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Dec 21 10:40:27 2023
+# Make data base, printed on Fri Jan 12 14:56:44 2024
 
 # Variables
 
@@ -49,7 +49,7 @@ XDG_DATA_DIRS = /usr/local/share:/usr/share:/var/lib/snapd/desktop
 # environment
 VSCODE_CWD = /home/enrique
 # environment
-SSH_CONNECTION = 10.5.65.99 49476 10.5.65.33 22
+SSH_CONNECTION = 10.5.65.99 51102 10.5.65.33 22
 # makefile (from 'Makefile', line 2)
 PATH := /home/enrique/.vscode-server/bin/0ee08df0cf4527e40edc9aa28f4b5bd38bbff2b2/bin/remote-cli:.:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/enrique/bin:/usr/local/ompi/bin:/usr/local/namd:/usr/local/cuda/bin:/usr/local/bin:/usr/local/cmake-3.26.4/bin:/home/enrique/bin:/home/enrique/bin:/usr/local/nvidia/hpc_sdk/Linux_x86_64/23.7/compilers/bin
 # makefile (from 'Makefile', line 1)
@@ -63,7 +63,7 @@ g16root = /usr/local
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-65d34aca-798f-4d72-9ee8-b279a306f41e.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-49d3734d-43e6-4d76-995e-e9e09b20209f.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -149,7 +149,7 @@ MAKEFLAGS = pqrR
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_CLIENT = 10.5.65.99 49476 22
+SSH_CLIENT = 10.5.65.99 51102 22
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -193,7 +193,7 @@ OBJ_CORE = general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o In
 # environment
 MOTD_SHOWN = pam
 # variable set hash-table stats:
-# Load=91/1024=9%, Rehash=0, Collisions=15/126=12%
+# Load=91/1024=9%, Rehash=0, Collisions=15/127=12%
 
 # Pattern-specific Variable Values
 
@@ -222,20 +222,44 @@ MOTD_SHOWN = pam
 Definitions.o: Definitions.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Definitions'
-#  Last modified 2023-12-20 09:11:30.586201059
+#  Last modified 2023-12-22 17:19:10.384359055
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(FC)  -c $(FCOPTS) $< -o $@
 
+# Not a target:
+trj_analysis.f90:
+#  Implicit rule search has been done.
+#  Last modified 2023-12-20 09:12:49.847205828
+#  File has been updated.
+#  Successfully updated.
+
 all: general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o mainsubs.o trj_analysis.o ex-scan.o
 #  Command line target.
 #  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
+# automatic
+# @ := all
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o mainsubs.o trj_analysis.o ex-scan.o
+# automatic
+# | := 
+# automatic
+# < := general.o
+# automatic
+# ^ := general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o mainsubs.o trj_analysis.o ex-scan.o
+# automatic
+# ? := general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o mainsubs.o trj_analysis.o ex-scan.o
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
 #  recipe to execute (from 'Makefile', line 25):
 	$(FC) $(LKOPTS) -o trj_analysis.exe $(OBJ_CORE)  $(LKLIBS)
 
@@ -249,20 +273,24 @@ netcdflib.f90:
 # Not a target:
 gpucodes.f90:
 #  Implicit rule search has been done.
-#  Last modified 2023-12-19 13:57:00.633033066
+#  Last modified 2023-12-22 17:11:26.841331164
 #  File has been updated.
 #  Successfully updated.
 
-# Not a target:
-trj_analysis.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+trj_analysis.o: trj_analysis.f90
+#  Implicit rule search has been done.
+ 
+#  Implicit/static pattern stem: 'trj_analysis'
+#  Last modified 2023-12-22 17:19:19.155359583
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 22):
+	$(FC)  -c $(FCOPTS) $< -o $@
 
 netcdflib.o: netcdflib.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'netcdflib'
-#  Last modified 2023-12-20 09:10:38.029197897
+#  Last modified 2023-12-22 17:19:09.810359021
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
@@ -283,8 +311,7 @@ general.f90:
 gpucodes.o: gpucodes.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'gpucodes'
-#  Last modified 2023-12-20 09:10:41.963198133
- 
+#  Last modified 2023-12-22 17:19:13.927359269
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
@@ -297,26 +324,46 @@ Makefile:
 #  File has been updated.
 #  Successfully updated.
 
-# Not a target:
-Cells.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-general.o: general.f90
+Cells.o: Cells.f90
 #  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'general'
-#  Last modified 2023-12-20 09:10:36.92219783
+#  Implicit/static pattern stem: 'Cells'
+#  Last modified 2023-12-22 17:19:16.576359428
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(FC)  -c $(FCOPTS) $< -o $@
 
 # Not a target:
-mainsubs.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+mainsubs.f90:
+#  Implicit rule search has been done.
+#  Last modified 2023-12-22 12:59:49.311422741
+#  File has been updated.
+#  Successfully updated.
+
+general.o: general.f90
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'general'
+#  Last modified 2023-12-22 17:19:08.711358955
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 22):
+	$(FC)  -c $(FCOPTS) $< -o $@
+
+# Not a target:
+Cells.f90:
+#  Implicit rule search has been done.
+#  Last modified 2023-12-19 10:08:36.625208492
+#  File has been updated.
+#  Successfully updated.
+
+mainsubs.o: mainsubs.f90
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'mainsubs'
+#  Last modified 2023-12-22 17:19:18.540359546
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 22):
+	$(FC)  -c $(FCOPTS) $< -o $@
 
 # Not a target:
 .DEFAULT:
@@ -327,7 +374,7 @@ mainsubs.o:
 # Not a target:
 Init.f90:
 #  Implicit rule search has been done.
-#  Last modified 2023-12-20 17:37:58.779029525
+#  Last modified 2023-12-21 11:37:14.047925869
 #  File has been updated.
 #  Successfully updated.
 
@@ -341,34 +388,17 @@ clean:
 Init.o: Init.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'Init'
-#  Last modified 2023-12-20 17:28:50.874996558
+#  Last modified 2023-12-22 17:19:15.461359361
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := Init.o
-# automatic
-# % := 
-# automatic
-# * := Init
-# automatic
-# + := Init.f90
-# automatic
-# | := 
-# automatic
-# < := Init.f90
-# automatic
-# ^ := Init.f90
-# automatic
-# ? := Init.f90
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(FC)  -c $(FCOPTS) $< -o $@
 
 ex-scan.o:
 #  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Last modified 2023-12-22 17:19:24.025359876
+#  File has been updated.
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 29):
 	$(CC) -O4 --std c++14 -c ex-scan.cu
 
@@ -402,7 +432,7 @@ Definitions.f90:
 DBscan.o: DBscan.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'DBscan'
-#  Last modified 2023-12-20 09:10:42.154198145
+#  Last modified 2023-12-22 17:19:14.137359281
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
@@ -411,26 +441,26 @@ DBscan.o: DBscan.f90
 CPUcodes.o: CPUcodes.f90
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'CPUcodes'
-#  Last modified 2023-12-20 09:10:38.847197946
+#  Last modified 2023-12-22 17:19:10.657359072
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(FC)  -c $(FCOPTS) $< -o $@
 
 # files hash-table stats:
-# Load=24/1024=2%, Rehash=0, Collisions=2/70=3%
+# Load=27/1024=3%, Rehash=0, Collisions=5/83=6%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 62 / storage = 629 B / avg = 10 B
-# current buf: size = 8162 B / used = 629 B / count = 62 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 65 / storage = 663 B / avg = 10 B
+# current buf: size = 8162 B / used = 663 B / count = 65 / avg = 10 B
 
-# strcache performance: lookups = 100 / hit rate = 38%
+# strcache performance: lookups = 110 / hit rate = 40%
 # hash-table stats:
-# Load=62/8192=1%, Rehash=0, Collisions=8/100=8%
-# Finished Make data base on Thu Dec 21 10:40:27 2023
+# Load=65/8192=1%, Rehash=0, Collisions=9/110=8%
+# Finished Make data base on Fri Jan 12 14:56:44 2024
 
  

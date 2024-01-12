@@ -2,11 +2,10 @@
     "makefile.extensionOutputFolder": "./.vscode",
     "files.exclude": {
         "*.exe": true,
+        "*.json": true,
+        "*.log": true,
         "*.mod": true,
         "*.o": true
     },
-    "editor.wordWrap": "on",
-    "files.associations": {
-        "*.cuf": "f90"
-    }
+    "editor.wordWrap": "on"
 }
