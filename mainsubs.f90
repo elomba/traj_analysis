@@ -257,6 +257,9 @@ subroutine cluster_analysis(Iconf, Nmol)
      write(888,'(5f15.7)')i, rclxyz(1:ndim,i)
   end do
   stop
+  ! Here there are changes 
+  ! test 
+  ! more changes 
   rclxyzd(:,:) = rclxyz(:,:)
   !
   ! Compute cluster-cluster structure factor
