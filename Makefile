@@ -6,7 +6,7 @@ FC = nvfortran
 F90 = nvfortran
 OBJ_CORE = general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o  mainsubs.o trj_analysis.o  ex-scan.o 
 
-FCOPTS = $(INC) -cuda -m-O2 -gpu=cc60,cc70,cc80 
+FCOPTS = $(INC) -cuda -mavx2 -mno-avx512f -O2 -gpu=cc60,cc70,cc80 
 F90OPTS =  -cuda -O2 -gpu=cc60,cc70,cc80
 LKOPTS = -L/usr/local/nv_netcdf/lib64 -cuda -c++libs -gpu=cc80,cc70,cc60
 LKLIBS = -lnetcdff
