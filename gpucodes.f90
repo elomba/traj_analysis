@@ -517,6 +517,7 @@ contains
     real (kind=4), value, intent(IN) ::  dq, q2max
     
     integer :: i ,j, it, kx, ky, kz, ind, ia
+    print *, dim, Nmol
     kx = (blockidx%x-1)*blockdim%x + threadidx%x-1
     ky = (blockidx%y-1)*blockdim%y + threadidx%y-1
     fk1 = fk(1)
