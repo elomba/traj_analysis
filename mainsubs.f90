@@ -254,9 +254,9 @@ subroutine cluster_analysis(Iconf, Nmol)
      if (indr<=ndr)radii(indr) = radii(indr)+1
      denscl = denscl + cluster(i)%cldens
      rclus = rclus +  rcluster
-     write(888,'(5f15.7)')i, rclxyz(1:ndim,i)
+   !  write(888,'(i5,5f15.7)')i, rclxyz(1:ndim,i)
   end do
-  stop(" A ver que pasa ")
+  !stop(" A ver que pasa ")
   ! Here there are changes 
   ! test 
   ! more changes 
