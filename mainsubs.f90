@@ -262,7 +262,9 @@ subroutine cluster_analysis(Iconf, Nmol)
   if (ndim == 3) then
      call sqf3Dcl<<<tBlock,grid>>>(rclxyzd,cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
   else
+   print *, cluster_id
      call sqf2Dcl<<<tBlock,grid>>>(rclxyzd,cluster_id,fk_d,sqfcl_d,nqmax,qmin2,dq)
+     print *, " bien"
   end if
   averdens = averdens + denscl/cluster_id
   avradio = avradio + rclus/cluster_id
