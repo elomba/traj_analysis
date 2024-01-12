@@ -145,12 +145,8 @@ subroutine cluster_analysis(Iconf, Nmol)
   !
   write(188,"('ITEM: TIMESTEP'/I12/'ITEM: NUMBER OF ATOMS'/I12/'ITE&
        &M: BOX BOUNDS pp pp pp')")nstep, nbigcl
-       
-  if (ndim==3) then
-   write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
-  else
-   write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim),-0.5,0.5
-  endif
+  write(188,"(2f15.7)")(0.0,sidel(i),i=1,ndim)
+  if (ndim == 2) write(188,"('-0.5 0.5)")
   write(188,"('ITEM: ATOMS id type id x y z')")
   !        write(189,*) " iconf=", iconf
   icl = 0
