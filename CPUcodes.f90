@@ -141,7 +141,7 @@ subroutine rdfcl(dim,members,nm,sidel,side2,g,lsmax,deltar,dens,jmin)
   
   subroutine rdfclcl(dim,centers,nm,sidel,side2,g,lsmax,deltar,vol)
     integer, intent(IN) :: nm, lsmax, dim
-    real, intent(IN) :: centers(3,nm),sidel(3), side2, deltar, vol
+    real, intent(IN) :: centers(dim,nm),sidel(dim), side2, deltar, vol
     real, intent(INOUT) :: g(lsmax)
     real :: rv(3), rr2, rr, fact
     integer :: k, l, i, j, ind
