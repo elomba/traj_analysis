@@ -208,7 +208,7 @@ contains
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix_s(ind,itj,iti),1)
-             !if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+             if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
           endif
        Enddo
        call syncthreads()
