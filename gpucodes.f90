@@ -188,7 +188,7 @@ contains
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
-    integer, shared :: histomix_s(200,2,2)
+    integer, shared :: histomix_s(300,2,2)
     histomix_s(:,:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
