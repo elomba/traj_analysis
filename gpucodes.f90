@@ -182,7 +182,7 @@ contains
        use comun, only : dimsh
     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
     integer, intent(IN) :: itype(Nmol)
-    integer i, j, ind, ia, fact, iti, itj
+    integer i, j, ind, ia, fact, iti, itj, istart
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
     real, dimension(3) :: rv
     real, value, intent(IN) :: side2, deltar
