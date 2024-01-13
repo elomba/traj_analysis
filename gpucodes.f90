@@ -188,7 +188,7 @@ contains
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
-    integer, shared :: histomix_s(220,2,2)
+    integer, shared :: histomix_s(800,2,2)
     histomix_s(:,:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
@@ -209,7 +209,7 @@ contains
              rr = __fsqrt_rn(rr2)
              ! rr = sqrt(rr2)
              ind = Nint(rr/deltar)
-             if (ind .lt.220) then
+             if (ind .lt.800) then
              ia = atomicadd(histomix_s(ind,itj,iti),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
              else 
