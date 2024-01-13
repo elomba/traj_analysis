@@ -442,7 +442,7 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
   integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
   histomix_d(:,:,:) = 0
   if (ndim == 3) then
-     call rdf<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
+     call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
           &,itype_d,side2,sidel_d,deltar)
   else
      call rdf2<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
