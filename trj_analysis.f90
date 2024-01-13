@@ -69,6 +69,7 @@ program trj_analysis
   !
   nbcuda = Nmol/nthread
   if (nbcuda*nthread .ne. Nmol) nbcuda=nbcuda+1
+  print *, " Using ",nbcuda," blocks and ", nthread," threads "
   bl2 = dim3(Nmol/16,Nmol/16,1)
   thr2 = dim3(16, 16,1)
   call InitVars(ndim,nsp,Nmol)
