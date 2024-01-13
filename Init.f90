@@ -124,6 +124,10 @@ Subroutine InitStorage(Nmol,nsp)
   lmaxy = nint(qmin/(2*pi/sidel(2)))
   if (ndim ==3) lmaxz = nint(qmin/(2*pi/sidel(3)))
   lsmax = nint(minval(sidel(1:ndim))/2.0/deltar)+1
+  if (lsmax>dimsh) then
+   print *, " Error g(r) grid ",lsmax," larger that shared memory: Redimension dimsh"
+   stop
+  endif
   ! Number of threads for S(Q) calculation (64)
   if (ndim == 3) then
      grid = dim3(4,4,4)
@@ -148,10 +152,10 @@ Subroutine InitStorage(Nmol,nsp)
   endif
   qmin = lmaxx*fk(1)
   Allocate(sqf(nqmax),sqfcl(nqmax),sqfp(nqmax,nsp),nq(nqmax))
-  Allocate(histomix(lsmax,nsp,nsp),histomixi(lsmax,nsp,nsp)&
+  Allocate(histomix(lsmax,nsp,nsp),histomixi(nbcuda*lsmax,nsp,nsp)&
        &,gcluster(lsmax),gclustav(lsmax),gclcl(lsmax),rhoclus(0:lsmax),&
        & rhoclusav(0:lsmax),sqcl(nqmax)) 
-  Allocate (histomix_d(lsmax,nsp,nsp),sqf_d(nqmax),sqfcl_d(nqmax),sqfp_d(nqmax&
+  Allocate (histomix_d(nbcuda*lsmax,nsp,nsp),sqf_d(nqmax),sqfcl_d(nqmax),sqfp_d(nqmax&
        &,nsp))
 !  print *, ' bien2'
   nq_d(:) = nq(:)

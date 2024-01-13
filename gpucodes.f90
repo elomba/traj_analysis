@@ -179,6 +179,7 @@ contains
 
   attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nsp,lsmax,itype&
        &,side2,sidel,deltar)
+       use comun, only : dimsh
     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj
@@ -188,7 +189,7 @@ contains
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
-    integer, shared :: histomix_s(800,2,2)
+    integer, shared :: histomix_s(dimsh,2,2)
     histomix_s(:,:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
@@ -209,16 +210,15 @@ contains
              rr = __fsqrt_rn(rr2)
              ! rr = sqrt(rr2)
              ind = Nint(rr/deltar)
-             if (ind .lt.800) then
              ia = atomicadd(histomix_s(ind,itj,iti),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
-             else 
-               print *, ind
-               stop
-             endif
           endif
        Enddo
        call syncthreads()
+       if (threadidx.x == 1) then
+         istart = (blockidx-1)*dimsh+1
+         histomix(istart:istart+dimsh-1,:,:) = histomix_s(1:dimsh,:,:)+histomix(istart:istart+dimsh,:,:)
+       endif 
     end if
   end subroutine rdf_sh
 
