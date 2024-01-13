@@ -215,9 +215,9 @@ contains
           endif
        Enddo
        call syncthreads()
-       if (threadidx.x == 1) then
-         istart = (blockidx-1)*dimsh+1
-         histomix(istart:istart+dimsh-1,:,:) = histomix_s(1:dimsh,:,:)+histomix(istart:istart+dimsh,:,:)
+       if (threadidx%x == 1) then
+         istart = (blockidx%x-1)*dimsh+1
+         histomix(istart:istart+dimsh-1,:,:) = histomix_s(1:dimsh,:,:)+histomix(istart:istart+dimsh-1,:,:)
        endif 
     end if
   end subroutine rdf_sh
