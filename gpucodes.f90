@@ -167,7 +167,8 @@ contains
           rr2= xd*xd+yd*yd+zd*zd
           If (rr2.Lt.side2) Then
              itj = itype(j)
-             rr = __fsqrt_rn(rr2)
+             ! rr = __fsqrt_rn(rr2)
+             rr = sqrt(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix(ind,itj,iti),1)
              if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
