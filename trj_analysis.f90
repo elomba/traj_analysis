@@ -197,15 +197,16 @@ program trj_analysis
      !
      t2= gptime(stopEvent,startEvent)
      call RDFcomp(Nmol,Iconf,nbcuda,nthread)
-     
+     t3 = gptime(stopEvent,startEvent)
+     trdf = trdf + t3-t2
+
      if (idir > 0 ) then
         !
         ! If required compute density profile along idir direction
         call  profile_comp(Nmol,Iconf,nbcuda,nthread)
      endif
 
-     t3 = gptime(stopEvent,startEvent)
-     trdf = trdf + t3-t2
+     
      !
      ! Comput S(Q)'s
      !
