@@ -142,7 +142,7 @@ program trj_analysis
      endif
      Call reset_struct
      if (Iconf .eq. 1) then
-        call InitStorage(Nmol,nsp)
+        call InitStorage(Nmol,nsp,nbcuda)
         if (rcl>0) call initclus(Iconf)
      end if
      side2 = (side/2)**2

@@ -102,13 +102,13 @@ Subroutine InitVars(ndim,nsp,Nmol)
 
 end Subroutine InitVars
 
-Subroutine InitStorage(Nmol,nsp)
+Subroutine InitStorage(Nmol,nsp,nbcuda)
   Use dev_def
   Use cudafor
   Use Comun
   Use gpcodes, only : tBlock, grid
   Implicit none
-  integer, intent(IN) :: Nmol, nsp
+  integer, intent(IN) :: Nmol, nsp, nbcuda
   integer :: i,j,k, ind, indm
   real :: rr
   if (idir > 0) then
