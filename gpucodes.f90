@@ -256,6 +256,7 @@ contains
        call syncthreads()
        if (threadidx%x == 1) then
          istart = (blockidx%x-1)*lsmax
+         print *, istart, lsmax, dimsh
          histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if
