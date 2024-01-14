@@ -178,6 +178,9 @@ contains
 
   attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nsp,hdim,lsmax,itype&
        &,side2,sidel,deltar)
+       !
+       ! Mossively parallel rdf calculation using shared memory
+       !
        use comun, only : dimsh
     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
     integer, intent(IN) :: itype(Nmol)
@@ -208,6 +211,9 @@ contains
              itj = itype(j)
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
+             !
+             ! Use shared memory histogram to speed calculations
+             !
              ia = atomicadd(histomix_s(ind,itj,iti),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
           endif
@@ -215,6 +221,10 @@ contains
        call syncthreads()
        if (threadidx%x == 1) then
          istart = (blockidx%x-1)*lsmax
+         ! 
+         ! Store each block's shared memory histogram on different positions
+         ! in global memory
+         !
          histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if
@@ -222,6 +232,9 @@ contains
 
   attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nsp,hdim,lsmax,itype&
        &,side2,sidel,deltar)
+       !
+       ! Masively parallel rdf calculation using shared memory (2D)
+       !
        use comun, only : dimsh
     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
     integer, intent(IN) :: itype(Nmol)
@@ -250,12 +263,19 @@ contains
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix_s(ind,itj,iti),1)
+             !
+             ! Use atomics over shared memory to minimize collisions
+             !
              if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
           endif
        Enddo
        call syncthreads()
        if (threadidx%x == 1) then
          istart = (blockidx%x-1)*lsmax
+         !
+         ! Store each block's shared memory histogram on different positions
+         ! in global memory
+         !
          histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if

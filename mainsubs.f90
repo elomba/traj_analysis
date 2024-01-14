@@ -449,7 +449,11 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
      call rdf2_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp&
           &,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   endif
+  ! Block histograms back from device to host
   histomixi(:,:,:) = histomix_d(:,:,:)
+  !
+  ! Gather histograms from each block
+  !
   do i = 0, nbcuda-1
      istart = i*lsmax
      histomix(1:lsmax,:,:) = histomix(1:lsmax,:,:)+real(histomixi(istart+1:istart+lsmax,:,:))
