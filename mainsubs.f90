@@ -446,8 +446,8 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
      call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp&      
           &,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   else
-     call rdf2_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
-          &,nbcuda*lsmax,itype_d,side2,sidel_d,deltar)
+     !call rdf2_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
+     !     &,nbcuda*lsmax,itype_d,side2,sidel_d,deltar)
   endif
   histomixi(:,:,:) = histomix_d(:,:,:)
   do i = 0, nbcuda-1
