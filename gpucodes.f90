@@ -216,8 +216,9 @@ contains
        Enddo
        call syncthreads()
        if (threadidx%x == 1) then
-         istart = (blockidx%x-1)*lsmax+1
-         histomix(istart:istart+lsmax-1,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart:istart+lsmax-1,:,:)
+         istart = (blockidx%x-1)*lsmax
+         print *, nbcuda, istart,
+         histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if
   end subroutine rdf_sh
