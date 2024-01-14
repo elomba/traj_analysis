@@ -443,15 +443,15 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
   integer :: istart, i
   histomix_d(:,:,:) = 0
   if (ndim == 3) then
-    ! call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,nbcuda*lsmax&
-    !      &,itype_d,side2,sidel_d,deltar)
+     call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,nbcuda*lsmax&
+          &,itype_d,side2,sidel_d,deltar)
   else
      call rdf2<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp,lsmax&
           &,itype_d,side2,sidel_d,deltar)
   endif
   histomixi(:,:,:) = histomix_d(:,:,:)
   do i = 0, nbcuda-1
-     istart = i*dimsh
+     istart = i*lsmax
      histomix(1:lsmax,:,:) = histomix(1:lsmax,:,:)+real(histomixi(istart+1:istart+lsmax,:,:))
   enddo
 end subroutine RDFcomp
