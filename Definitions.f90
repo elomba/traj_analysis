@@ -27,7 +27,7 @@ Module Comun
   !
   logical UnitR
   Integer, Parameter :: npmx=8192, nmblock=500,nmgrid=50000,&
-       & nspmax=6, nmolmax=220000,nmesmax=10000,nkmax=200,ksmax=6, dimsh=800
+       & nspmax=6, nmolmax=220000,nmesmax=10000,nkmax=200,ksmax=6, dimsh=1200
   Integer, Dimension(:), Allocatable :: ntype, itype,  imolt, nctr, ntml, imf, iml, nml, tmol,  list, done
   Integer :: Nconf, natms, imcon, keytrj, nsp, itraj, nmolty, nmzero, ndim
   Integer ::  nqmax, lmaxx, lmaxy, lmaxz, nqmin, lsmax, ndr, width, idir
