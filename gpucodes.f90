@@ -168,10 +168,9 @@ contains
           If (rr2.Lt.side2) Then
              itj = itype(j)
              rr = __fsqrt_rn(rr2)
-             !rr = sqrt(rr2)
              ind = Nint(rr/deltar)
-             !ia = atomicadd(histomix(ind,itj,iti),1)
-             !if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+             ia = atomicadd(histomix(ind,itj,iti),1)
+             if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
           endif
        Enddo
     end if
@@ -208,7 +207,6 @@ contains
           If (rr2.Lt.side2) Then
              itj = itype(j)
              rr = __fsqrt_rn(rr2)
-             ! rr = sqrt(rr2)
              ind = Nint(rr/deltar)
              ia = atomicadd(histomix_s(ind,itj,iti),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
@@ -217,11 +215,51 @@ contains
        call syncthreads()
        if (threadidx%x == 1) then
          istart = (blockidx%x-1)*lsmax
-!         print *, nbcuda, istart,
          histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if
   end subroutine rdf_sh
+
+  attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nsp,hdim,lsmax,itype&
+       &,side2,sidel,deltar)
+       use comun, only : dimsh
+    integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
+    integer, intent(IN) :: itype(Nmol)
+    integer i, j, ind, ia, fact, iti, itj, istart
+    real ::  rr2, rr, xi, yi, zi, xd, yd, zd
+    real, dimension(3) :: rv
+    real, value, intent(IN) :: side2, deltar
+    real, intent(IN) :: sidel(3)
+    real, dimension(dim,Nmol), intent(IN) :: r
+    integer, intent(INOUT) :: histomix(hdim,nsp,nsp)
+    integer, shared :: histomix_s(dimsh,2,2)
+    histomix_s(:,:,:) = 0
+    i = (blockidx%x-1) * blockdim%x + threadidx%x
+    if (i<=Nmol-1) then
+      iti = itype(i)
+       xi = r(1,i)
+       yi = r(2,i)
+       Do j=i+1,Nmol
+          xd = r(1,j)-xi
+          yd = r(2,j)-yi
+          xd = xd -sidel(1)*nint(xd/sidel(1))
+          yd = yd -sidel(2)*nint(yd/sidel(2))
+          rr2= xd*xd+yd*yd
+          If (rr2.Lt.side2) Then
+             itj = itype(j)
+             rr = __fsqrt_rn(rr2)
+             ind = Nint(rr/deltar)
+             ia = atomicadd(histomix_s(ind,itj,iti),1)
+             if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
+          endif
+       Enddo
+       call syncthreads()
+       if (threadidx%x == 1) then
+         istart = (blockidx%x-1)*lsmax
+         histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
+       endif 
+    end if
+  end subroutine rdf2_sh
 
   attributes (global) subroutine rdf2(r,Nmol,dim,histomix,nsp,lsmax,itype&
        &,side2,sidel,deltar)

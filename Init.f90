@@ -152,6 +152,7 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
   endif
   qmin = lmaxx*fk(1)
   Allocate(sqf(nqmax),sqfcl(nqmax),sqfp(nqmax,nsp),nq(nqmax))
+  ! nbcuda*lsmax !! only for shared memory rdf
   Allocate(histomix(lsmax,nsp,nsp),histomixi(nbcuda*lsmax,nsp,nsp)&
        &,gcluster(lsmax),gclustav(lsmax),gclcl(lsmax),rhoclus(0:lsmax),&
        & rhoclusav(0:lsmax),sqcl(nqmax)) 
