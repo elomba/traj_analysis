@@ -158,7 +158,6 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
        & rhoclusav(0:lsmax),sqcl(nqmax)) 
   Allocate (histomix_d(nbcuda*lsmax,nit),sqf_d(nqmax),sqfcl_d(nqmax),sqfp_d(nqmax&
        &,nsp))
-  print *, "ok", nit 
   nq_d(:) = nq(:)
   gclustav(:) = 0.0
   rhoclus(:) = 0.0
