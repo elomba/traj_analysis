@@ -467,6 +467,7 @@ subroutine profile_comp(Nmol,Iconf,nbcuda,nthread)
    !
   use comun
   use dev_def
+  use gpcodes, only : dprof
   implicit none
   integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
   densprof_d(:,:)= 0
