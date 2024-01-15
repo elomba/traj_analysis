@@ -153,10 +153,10 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
   qmin = lmaxx*fk(1)
   Allocate(sqf(nqmax),sqfcl(nqmax),sqfp(nqmax,nsp),nq(nqmax))
   ! nbcuda*lsmax !! only for shared memory rdf
-  Allocate(histomix(lsmax,nsp,nsp),histomixi(nbcuda*lsmax,nsp,nsp)&
+  Allocate(histomix(lsmax,nsp,nsp),histomixi(nbcuda*lsmax,nit)&
        &,gcluster(lsmax),gclustav(lsmax),gclcl(lsmax),rhoclus(0:lsmax),&
        & rhoclusav(0:lsmax),sqcl(nqmax)) 
-  Allocate (histomix_d(nbcuda*lsmax,nsp,nsp),sqf_d(nqmax),sqfcl_d(nqmax),sqfp_d(nqmax&
+  Allocate (histomix_d(nbcuda*lsmax,nit),sqf_d(nqmax),sqfcl_d(nqmax),sqfp_d(nqmax&
        &,nsp))
   nq_d(:) = nq(:)
   gclustav(:) = 0.0
@@ -164,7 +164,7 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
   rhoclusav(:) = 0.0
   gclcl(:) = 0
   histomix(:,:,:) = 0
-  histomix_d(:,:,:) = 0
+  histomix_d(:,:) = 0
   sqf_d(:) = 0.0
   sqfcl_d(:) = 0.0
   sqfp_d(:,:) = 0

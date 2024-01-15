@@ -28,8 +28,9 @@ Module Comun
   logical UnitR
   Integer, Parameter :: npmx=8192, nmblock=500,nmgrid=50000,&
        & nspmax=3, nmolmax=220000,nmesmax=10000,nkmax=200,ksmax=6, dimsh=1000
+  Integer, Parameter :: nitmax=nspmax*(nspmax+1)/2
   Integer, Dimension(:), Allocatable :: ntype, itype,  imolt, nctr, ntml, imf, iml, nml, tmol,  list, done
-  Integer :: Nconf, natms, imcon, keytrj, nsp, itraj, nmolty, nmzero, ndim
+  Integer :: Nconf, natms, imcon, keytrj, nsp, nit, itraj, nmolty, nmzero, ndim
   Integer ::  nqmax, lmaxx, lmaxy, lmaxz, nqmin, lsmax, ndr, width, idir
   Integer, save :: nstep=0
   Real (myprec), Dimension(:,:), Allocatable :: vel, force, r, msq, sft
@@ -42,7 +43,7 @@ Module Comun
   Real (myprec) :: weight, charge, tstep, side, kmax, volumen, sigma,&
        & pwall, pwallp, volumen_r, side2, bav, bav2, b2av, densty,&
        & bsprod, rdenst
-  Real, allocatable :: histomix(:,:,:), gcluster(:), gclustav(:),&
+       Real, allocatable :: histomix(:,:,:), gcluster(:), gclustav(:),&
        & rhoclus(:), rhoclusav(:), gclcl(:), sqcl(:), sqf(:), sqfp(:,:), sqfcl(:), densprof(:,:)
   Real ::  fk(3), qmin, qmax, qmin2
   Character :: fname88*18, fname55*18,fname72*18,fname70*18,fname77*18&
@@ -50,7 +51,8 @@ Module Comun
        &,fname23*18,fname11*18,atnam*8,npdim(3)*1=(/'x','y','z'/)
   logical :: pdir(3) = .true.
   Character, Dimension(:), Allocatable :: atoms*8
-  Integer, Allocatable :: lty(:), nq(:), ipos(:,:), histomixi(:,:,:), densprofi(:,:)
+!  Integer, Allocatable :: lty(:), nq(:), ipos(:,:), histomixi(:,:,:), densprofi(:,:)
+  Integer, Allocatable :: lty(:), nq(:), ipos(:,:), histomixi(:,:), densprofi(:,:)
   contains 
   integer function fij(i,j)
      implicit none
@@ -73,7 +75,8 @@ module dev_def
   !
   real, device, allocatable ::r_d(:,:), rclxyzd(:,:)
   integer, device, allocatable :: itype_d(:), ipos_d(:,:), ntype_d(:)&
-       &, nq_d(:), gdone(:), histomix_d(:,:,:), densprof_d(:,:)
+!  &, nq_d(:), gdone(:), histomix_d(:,:,:), densprof_d(:,:)
+  &, nq_d(:), gdone(:), histomix_d(:,:), densprof_d(:,:)
   real, device, allocatable :: sqf_d(:), sqfp_d(:,:), sqfcl_d(:)
   real, device ::   fk_d(3), sidel_d(3)
   type (cudaDeviceProp) :: prop

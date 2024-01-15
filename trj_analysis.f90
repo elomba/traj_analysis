@@ -66,6 +66,7 @@ program trj_analysis
   Read(8,*) deltar, keytrj, tstep, rcl, jmin, dcl, minclsize
   read(8,*) qmin, qmax,  sigma
   Read(8,*) nsp
+  nit = nsp*(nsp+1)/2
   if (nsp > nspmax) then
      stop(" Error : no. of species too large ")
   end if
