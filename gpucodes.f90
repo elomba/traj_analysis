@@ -168,7 +168,7 @@ end function fij
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(hdim,nit)
     integer, shared :: histomix_s(dimsh,nitmax)
-    histomix_s(:,:,:) = 0
+    histomix_s(:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
       iti = itype(i)
@@ -202,9 +202,10 @@ end function fij
          ! Store each block's shared memory histogram on different positions
          ! in global memory
          !
-         histomix(istart+1:istart+lsmax,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:)
+         histomix(istart+1:istart+lsmax,:) = histomix_s(1:lsmax,:)+histomix(istart+1:istart+lsmax,:)
        endif 
     end if
+    
   end subroutine rdf_sh
 
   attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nit,hdim,lsmax,itype&
@@ -223,7 +224,7 @@ end function fij
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(hdim,nit)
     integer, shared :: histomix_s(dimsh,nitmax)
-    histomix_s(:,:,:) = 0
+    histomix_s(:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
       iti = itype(i)
