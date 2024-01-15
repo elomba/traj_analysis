@@ -145,7 +145,9 @@ program trj_analysis
       print *, ' buld cells'
         if (use_cell) then
            if (Iconf==1) call Init_Cell(rcl)
+           print *, ' exit init'
            call build_cells
+           print *, ' exit build '
         end if
      endif
      Call reset_struct
