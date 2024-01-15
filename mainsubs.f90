@@ -440,7 +440,7 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
   use gpcodes, only : rdf_sh, rdf2_sh
   implicit none
   integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
-  integer :: istart, i
+  integer :: istart, i, ind, k, l
   histomix_d(:,:) = 0
   if (ndim == 3) then
      call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nit&      
