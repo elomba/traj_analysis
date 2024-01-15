@@ -437,7 +437,7 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
    !
   use comun
   use dev_def
-  use gpcodes, only : rdf, rdf2
+  use gpcodes, only : rdf_sh, rdf2_sh
   implicit none
   integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
   integer :: istart, i
@@ -467,7 +467,6 @@ subroutine profile_comp(Nmol,Iconf,nbcuda,nthread)
    !
   use comun
   use dev_def
-  use gpcodes, only : rdf, rdf2
   implicit none
   integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
   densprof_d(:,:)= 0
