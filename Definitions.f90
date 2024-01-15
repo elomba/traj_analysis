@@ -53,18 +53,7 @@ Module Comun
   Character, Dimension(:), Allocatable :: atoms*8
 !  Integer, Allocatable :: lty(:), nq(:), ipos(:,:), histomixi(:,:,:), densprofi(:,:)
   Integer, Allocatable :: lty(:), nq(:), ipos(:,:), histomixi(:,:), densprofi(:,:)
-  contains 
-  integer function fij(i,j)
-     implicit none
-     integer i, j
-     if (i<=j) then
-      fij = (i-j)*(nsp-1)-(i-1)*(i-2)/2
-     else
-      fij = (j-i)*(nsp-1)-(j-1)*(j-2)/2
-     endif
-  end function fij
-
-
+  
 
 End Module Comun
 

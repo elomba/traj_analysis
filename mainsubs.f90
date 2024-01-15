@@ -443,10 +443,10 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
   integer :: istart, i
   histomix_d(:,:) = 0
   if (ndim == 3) then
-     call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp&      
+     call rdf_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nit&      
           &,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   else
-     call rdf2_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nsp&
+     call rdf2_sh<<<nbcuda,nthread>>>(r_d,Nmol,ndim,histomix_d,nit&
           &,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   endif
   ! Block histograms back from device to host

@@ -35,7 +35,17 @@ module gpcodes
   logical (kind=1), device, allocatable :: gvisited(:), gcore(:), gborder(:)
   type (dim3) :: grid, tBlock, thr2, bl2
 contains
-  
+ 
+   attributes (device) integer function fij(i,j)
+      implicit none
+      integer i, j
+      if (i<=j) then
+        fij = (i-j)*(nsp-1)-(i-1)*(i-2)/2
+       else
+         fij = (j-i)*(nsp-1)-(j-1)*(j-2)/2
+       endif
+end function fij
+
    subroutine init_gdbscan(Nmol)
     integer, intent(IN) :: Nmol
     allocate(goffset(Nmol), gneighbors(Nmol), gvisited(Nmol),gcore(Nmol), gborder(Nmol), gadjacency(20*Nmol))
@@ -142,13 +152,13 @@ contains
 
 
 
-  attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nsp,hdim,lsmax,itype&
+  attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nit,hdim,lsmax,itype&
        &,side2,sidel,deltar)
        !
        ! Mossively parallel rdf calculation using shared memory
        !
-       use comun, only : dimsh, nitmax, nit, fij
-    integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
+       use comun, only : dimsh, nitmax, fij
+    integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj, istart, ij
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
@@ -197,13 +207,13 @@ contains
     end if
   end subroutine rdf_sh
 
-  attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nsp,hdim,lsmax,itype&
+  attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nit,hdim,lsmax,itype&
        &,side2,sidel,deltar)
        !
        ! Masively parallel rdf calculation using shared memory (2D)
        !
-       use comun, only : dimsh, nitmax, nit, fij
-    integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
+       use comun, only : dimsh, nitmax, fij
+    integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj, istart, ij
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
