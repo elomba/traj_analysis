@@ -10,7 +10,6 @@ FCOPTS = $(INC) -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80
 LKOPTS = -L/usr/local/nv_netcdf/lib64 -cuda -c++libs -gpu=cc80,cc70,cc60
 LKLIBS = -lnetcdff
 INC = -I /usr/local/nv_netcdf/include
-LKOPTS = 
 
 
 %.o : %.mod
