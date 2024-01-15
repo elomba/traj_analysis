@@ -240,7 +240,7 @@ end function fij
              itj = itype(j)
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
-             ij = fij(i,j,nsp)
+             ij = fij(iti,itj,nsp)
              !
              ! Use atomics over shared memory to minimize collisions
              !
