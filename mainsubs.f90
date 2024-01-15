@@ -460,6 +460,7 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
      do k = 1, nsp
       do l = k, nsp
        histomix(1:lsmax,k,l) = histomix(1:lsmax,k,l)+real(histomixi(istart+1:istart+lsmax,ind))
+       ind = ind+1
       end do
    end do 
   enddo
