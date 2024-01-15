@@ -190,8 +190,7 @@ end function fij
              !
              ! Use shared memory histogram to speed calculations
              !
-             ij = fij(i,j,nsp)
-             print *, ij
+             ij = fij(iti,itj,nsp)
              ia = atomicadd(histomix_s(ind,ij),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
