@@ -450,7 +450,7 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
           &,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   endif
   ! Block histograms back from device to host
-  histomixi(:,:,:) = histomix_d(:,:,:)
+  histomixi(:,:) = histomix_d(:,:)
   !
   ! Gather histograms from each block
   !

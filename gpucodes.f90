@@ -147,17 +147,17 @@ contains
        !
        ! Mossively parallel rdf calculation using shared memory
        !
-       use comun, only : dimsh
+       use comun, only : dimsh, nitmax, nit, fij
     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
     integer, intent(IN) :: itype(Nmol)
-    integer i, j, ind, ia, fact, iti, itj, istart
+    integer i, j, ind, ia, fact, iti, itj, istart, ij
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
     real, dimension(3) :: rv
     real, value, intent(IN) :: side2, deltar
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
-    integer, intent(INOUT) :: histomix(hdim,nsp,nsp)
-    integer, shared :: histomix_s(dimsh,nspmax,nspmax)
+    integer, intent(INOUT) :: histomix(hdim,nit)
+    integer, shared :: histomix_s(dimsh,nitmax)
     histomix_s(:,:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
@@ -180,8 +180,9 @@ contains
              !
              ! Use shared memory histogram to speed calculations
              !
-             ia = atomicadd(histomix_s(ind,itj,iti),1)
-             if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
+             ij = fij(i,j)
+             ia = atomicadd(histomix_s(ind,ij),1)
+             if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
        Enddo
        call syncthreads()
@@ -191,7 +192,7 @@ contains
          ! Store each block's shared memory histogram on different positions
          ! in global memory
          !
-         histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
+         histomix(istart+1:istart+lsmax,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:)
        endif 
     end if
   end subroutine rdf_sh
@@ -201,17 +202,17 @@ contains
        !
        ! Masively parallel rdf calculation using shared memory (2D)
        !
-       use comun, only : dimsh
+       use comun, only : dimsh, nitmax, nit, fij
     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax, hdim
     integer, intent(IN) :: itype(Nmol)
-    integer i, j, ind, ia, fact, iti, itj, istart
+    integer i, j, ind, ia, fact, iti, itj, istart, ij
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
     real, dimension(3) :: rv
     real, value, intent(IN) :: side2, deltar
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
-    integer, intent(INOUT) :: histomix(hdim,nsp,nsp)
-    integer, shared :: histomix_s(dimsh,2,2)
+    integer, intent(INOUT) :: histomix(hdim,nit)
+    integer, shared :: histomix_s(dimsh,nitmax)
     histomix_s(:,:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
@@ -228,11 +229,12 @@ contains
              itj = itype(j)
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
-             ia = atomicadd(histomix_s(ind,itj,iti),1)
+             ij = fij(i,j)
+             ia = atomicadd(histomix_s(ind,ij),1)
              !
              ! Use atomics over shared memory to minimize collisions
              !
-             if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
+             if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
        Enddo
        call syncthreads()
@@ -242,7 +244,7 @@ contains
          ! Store each block's shared memory histogram on different positions
          ! in global memory
          !
-         histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
+         histomix(istart+1:istart+lsmax,:) = histomix_s(1:lsmax,:)+histomix(istart+1:istart+lsmax,:)
        endif 
     end if
   end subroutine rdf2_sh
