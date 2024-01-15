@@ -143,6 +143,7 @@ program trj_analysis
      tread = tread + cpu3-cpu2
      if (rcl > 0) then
       print *, ' buld cells'
+      print *, Iconf, use_cell, rcl
         if (use_cell) then
          print *, Iconf, use_cell, rcl
            if (Iconf==1) call Init_Cell(rcl)
