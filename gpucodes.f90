@@ -30,7 +30,7 @@ module gpcodes
   use cudafor
   use comun, only: nmgrid, nspmax
   implicit none
-  integer, parameter :: nthread=256
+  integer, parameter :: nthread=512
   integer, device, allocatable :: goffset(:), gneighbors(:), gadjacency(:)
   logical (kind=1), device, allocatable :: gvisited(:), gcore(:), gborder(:)
   type (dim3) :: grid, tBlock, thr2, bl2
