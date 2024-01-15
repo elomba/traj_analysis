@@ -40,9 +40,9 @@ contains
       implicit none
       integer, value :: i, j, nsp
       if (i<=j) then
-        fij = (i-1)*(nsp-1)-(i-1)*(i-2)/2
+        fij = (i-1)*(nsp-1)-(i-1)*(i-2)/2+j
        else
-         fij = (j-1)*(nsp-1)-(j-1)*(j-2)/2
+         fij = (j-1)*(nsp-1)-(j-1)*(j-2)/2+i
        endif
 end function fij
 
@@ -191,7 +191,7 @@ end function fij
              ! Use shared memory histogram to speed calculations
              !
              ij = fij(iti,itj,nsp)
-             print *, iti,itj,ij
+        !     print *, iti,itj,ij
              ia = atomicadd(histomix_s(ind,ij),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
