@@ -169,7 +169,6 @@ end function fij
     integer, intent(INOUT) :: histomix(hdim,nit)
     integer, shared :: histomix_s(dimsh,nitmax)
     histomix_s(:,:) = 0
-    print *, nit, nitmax
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
       iti = itype(i)
@@ -192,6 +191,7 @@ end function fij
              ! Use shared memory histogram to speed calculations
              !
              ij = fij(i,j,nsp)
+             print *, ij
              ia = atomicadd(histomix_s(ind,ij),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
