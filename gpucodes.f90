@@ -169,6 +169,7 @@ end function fij
     integer, intent(INOUT) :: histomix(hdim,nit)
     integer, shared :: histomix_s(dimsh,nitmax)
     histomix_s(:,:) = 0
+    print *, nit, nitmax
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
       iti = itype(i)
