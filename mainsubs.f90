@@ -88,7 +88,6 @@ subroutine cluster_search(iconf,nmol,stopEvent,startEvent,nbcuda,nthread)
      stop(error_msg)
   end if
   Nu_clus = cluster_id
-  print *, ' Nu_clus ', Nu_clus
 end subroutine cluster_search
 
 subroutine cluster_analysis(Iconf, Nmol)

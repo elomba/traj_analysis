@@ -40,7 +40,6 @@ contains
     ! Cell size extends up to rcut
     !
     ! 
-    Print *, ' Entrando en init_cell'
     maxi= Int(sidel(1)/rcl)
     maxj= int(sidel(2)/rcl)
     maxk = 1
@@ -52,7 +51,6 @@ contains
     maxkd = maxk
     ncelld = ncell
     nnd = nn
-    print *, nn, ncell, maxi, maxj, maxk, rcl, sidel
     Allocate(neigh(0:ncell-1,nn),head(0:ncell-1),lista(natms))
     Allocate(neighd(0:ncell-1,nn),headd(0:ncell-1),listad(natms))
     cellx = sidel(1)/maxi
