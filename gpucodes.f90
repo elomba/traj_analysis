@@ -39,6 +39,10 @@ contains
    attributes (device) integer function fij(i,j,nsp)
       implicit none
       integer, value :: i, j, nsp
+      !
+      ! this function maps the indices (i,j) of a symmetric matrix A(i,j) onto the single index k
+      ! of a vector 
+      !
       if (i<=j) then
         fij = (i-1)*(nsp-1)-(i-1)*(i-2)/2+j
        else
