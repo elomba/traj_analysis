@@ -140,41 +140,7 @@ contains
   end subroutine gbfs
 
 
-  attributes (global) subroutine rdf(r,Nmol,dim,histomix,nsp,lsmax,itype&
-       &,side2,sidel,deltar)
-    integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
-    integer, intent(IN) :: itype(Nmol)
-    integer i, j, ind, ia, fact, iti, itj
-    real ::  rr2, rr, xi, yi, zi, xd, yd, zd
-    real, dimension(3) :: rv
-    real, value, intent(IN) :: side2, deltar
-    real, intent(IN) :: sidel(3)
-    real, dimension(dim,Nmol), intent(IN) :: r
-    integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
-    i = (blockidx%x-1) * blockdim%x + threadidx%x
-    if (i<=Nmol-1) then
-      iti = itype(i)
-       xi = r(1,i)
-       yi = r(2,i)
-       zi = r(3,i)
-       Do j=i+1,Nmol
-          xd = r(1,j)-xi
-          yd = r(2,j)-yi
-          zd = r(3,j)-zi
-          xd = xd -sidel(1)*nint(xd/sidel(1))
-          yd = yd -sidel(2)*nint(yd/sidel(2))
-          zd = zd -sidel(3)*nint(zd/sidel(3))
-          rr2= xd*xd+yd*yd+zd*zd
-          If (rr2.Lt.side2) Then
-             itj = itype(j)
-             rr = __fsqrt_rn(rr2)
-             ind = Nint(rr/deltar)
-             ia = atomicadd(histomix(ind,itj,iti),1)
-             if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
-          endif
-       Enddo
-    end if
-  end subroutine rdf
+
 
   attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nsp,hdim,lsmax,itype&
        &,side2,sidel,deltar)
@@ -281,38 +247,7 @@ contains
     end if
   end subroutine rdf2_sh
 
-  attributes (global) subroutine rdf2(r,Nmol,dim,histomix,nsp,lsmax,itype&
-       &,side2,sidel,deltar)
-    integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
-    integer, intent(IN) :: itype(Nmol)
-    integer i, j, ind, ia, fact, iti, itj
-    real ::  rr2, rr, xi, yi,  xd, yd
-    real, dimension(3) :: rv
-    real, value, intent(IN) :: side2, deltar
-    real, intent(IN) :: sidel(3)
-    real, dimension(dim,Nmol), intent(IN) :: r
-    integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
-    i = (blockidx%x-1) * blockdim%x + threadidx%x
-    if (i<=Nmol-1) then
-    iti = itype(i)
-       xi = r(1,i)
-       yi = r(2,i)
-       Do j=i+1,Nmol
-          xd = r(1,j)-xi
-          yd = r(2,j)-yi
-          xd = xd -sidel(1)*nint(xd/sidel(1))
-          yd = yd -sidel(2)*nint(yd/sidel(2))
-          rr2= xd*xd+yd*yd
-          If (rr2.Lt.side2) Then
-             itj = itype(j)
-             rr = __fsqrt_rn(rr2)
-             ind = Nint(rr/deltar)
-             ia = atomicadd(histomix(ind,itj,iti),1)
-             if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
-          endif
-       Enddo
-    end if
-  end subroutine rdf2
+
 
   attributes (global) subroutine dprof(r,Nmol,dim,densprof,width,nsp,idir,itype&
        &,pwall,deltar)
@@ -617,4 +552,72 @@ contains
     istat = cudaEventElapsedTime(time, startEvent, stopEvent)
     gptime = time/1000.0
   end function gptime
+!   attributes (global) subroutine rdf(r,Nmol,dim,histomix,nsp,lsmax,itype&
+!        &,side2,sidel,deltar)
+!     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
+!     integer, intent(IN) :: itype(Nmol)
+!     integer i, j, ind, ia, fact, iti, itj
+   !  real ::  rr2, rr, xi, yi, zi, xd, yd, zd
+   !  real, dimension(3) :: rv
+   !  real, value, intent(IN) :: side2, deltar
+   !  real, intent(IN) :: sidel(3)
+   !  real, dimension(dim,Nmol), intent(IN) :: r
+   !  integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
+   !  i = (blockidx%x-1) * blockdim%x + threadidx%x
+!     if (i<=Nmol-1) then
+!       iti = itype(i)
+!        xi = r(1,i)
+!        yi = r(2,i)
+!        zi = r(3,i)
+!        Do j=i+1,Nmol
+!           xd = r(1,j)-xi
+!           yd = r(2,j)-yi
+!           zd = r(3,j)-zi
+!           xd = xd -sidel(1)*nint(xd/sidel(1))
+!           yd = yd -sidel(2)*nint(yd/sidel(2))
+!           zd = zd -sidel(3)*nint(zd/sidel(3))
+!           rr2= xd*xd+yd*yd+zd*zd
+!           If (rr2.Lt.side2) Then
+!              itj = itype(j)
+!              rr = __fsqrt_rn(rr2)
+!              ind = Nint(rr/deltar)
+!              ia = atomicadd(histomix(ind,itj,iti),1)
+!              if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+!           endif
+!        Enddo
+!     end if
+!   end subroutine rdf
+
+!   attributes (global) subroutine rdf2(r,Nmol,dim,histomix,nsp,lsmax,itype&
+!        &,side2,sidel,deltar)
+!     integer, value, intent(IN) :: Nmol, dim, nsp, lsmax
+!     integer, intent(IN) :: itype(Nmol)
+!     integer i, j, ind, ia, fact, iti, itj
+!     real ::  rr2, rr, xi, yi,  xd, yd
+!     real, dimension(3) :: rv
+!     real, value, intent(IN) :: side2, deltar
+!     real, intent(IN) :: sidel(3)
+!     real, dimension(dim,Nmol), intent(IN) :: r
+!     integer, intent(INOUT) :: histomix(lsmax,nsp,nsp)
+!     i = (blockidx%x-1) * blockdim%x + threadidx%x
+!     if (i<=Nmol-1) then
+!     iti = itype(i)
+!        xi = r(1,i)
+!        yi = r(2,i)
+!        Do j=i+1,Nmol
+!           xd = r(1,j)-xi
+!           yd = r(2,j)-yi
+!           xd = xd -sidel(1)*nint(xd/sidel(1))
+!           yd = yd -sidel(2)*nint(yd/sidel(2))
+!           rr2= xd*xd+yd*yd
+!           If (rr2.Lt.side2) Then
+!              itj = itype(j)
+!              rr = __fsqrt_rn(rr2)
+!              ind = Nint(rr/deltar)
+!              ia = atomicadd(histomix(ind,itj,iti),1)
+!              if (iti /= itj) ia = atomicadd(histomix(ind,iti,itj),1)
+!           endif
+!        Enddo
+!     end if
+!   end subroutine rdf2
 end module gpcodes
