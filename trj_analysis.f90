@@ -142,6 +142,7 @@ program trj_analysis
      call cpu_time(cpu3)
      tread = tread + cpu3-cpu2
      if (rcl > 0) then
+      print *, ' buld cells'
         if (use_cell) then
            if (Iconf==1) call Init_Cell(rcl)
            call build_cells
