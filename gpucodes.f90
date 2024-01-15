@@ -180,8 +180,8 @@ contains
              !
              ! Use shared memory histogram to speed calculations
              !
-      !       ia = atomicadd(histomix_s(ind,itj,iti),1)
-      !       if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
+             ia = atomicadd(histomix_s(ind,itj,iti),1)
+             if (iti /= itj) ia = atomicadd(histomix_s(ind,iti,itj),1)
           endif
        Enddo
        call syncthreads()
@@ -191,7 +191,7 @@ contains
          ! Store each block's shared memory histogram on different positions
          ! in global memory
          !
-       !  histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
+         histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if
   end subroutine rdf_sh
