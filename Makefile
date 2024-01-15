@@ -1,18 +1,16 @@
 NVPTH=/usr/local/nvidia/hpc_sdk/Linux_x86_64/23.7/compilers
 export PATH := $(PATH):$(NVPTH)/bin
-#LD_LIBRARY_PATH=$NVPTH/lib:/usr/local/nv_netcdf/lib64:$LD_LIBRARY_PATH
 CC = nvcc
 FC = nvfortran
 F90 = nvfortran
 OBJ_CORE = general.o netcdflib.o Definitions.o CPUcodes.o gpucodes.o DBscan.o Init.o Cells.o  mainsubs.o trj_analysis.o  ex-scan.o 
 
-#FCOPTS = $(INC) -cuda -mavx2 -mno-avx512f -O2 -gpu=cc60,cc70,cc80 
+# Remove avx512 instructions to avoid 'Illegal instruction' errors in older processors
 FCOPTS = $(INC) -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80 
-F90OPTS =  -cuda -fast -gpu=cc60,cc70,cc80
 LKOPTS = -L/usr/local/nv_netcdf/lib64 -cuda -c++libs -gpu=cc80,cc70,cc60
 LKLIBS = -lnetcdff
 INC = -I /usr/local/nv_netcdf/include
-#LKOPTS = -cuda -gpu=cc80,cc70,cc60
+LKOPTS = 
 
 
 %.o : %.mod

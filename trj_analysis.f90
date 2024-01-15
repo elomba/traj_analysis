@@ -6,11 +6,16 @@
 ! clusters, the cluster size distribution, and for seggregated
 ! clusters its pdf and s(Q). When idir > 0 idir defines a non-periodic spatial dimension. Across this 
 ! dimension a density profile analysis is performed. 
-! In first input line, dim defines the dimensionality of the problem. 
+!
+! In first input line, dim defines the dimensionality of the problem (2 or 3)
+!
 ! IMPORTANT !!!: When dim=2 it is ASSUMED that the 
 ! the z-direction is ommited, even it is still read in the trajectory netcdf file. 
 !
-! E. Lomba, Madrid, Dec. 2022
+! Warning !! Beware that minclsize defines the minimum cluster size to be taken into account to compute intracluster
+!            properties and cluster density profiles: this quantity strongly affects the resulting properties
+!
+! E. Lomba, Madrid, January 2024
 !
 program trj_analysis
   use myncdf
