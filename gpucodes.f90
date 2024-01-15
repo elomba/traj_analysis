@@ -160,7 +160,6 @@ contains
     integer, shared :: histomix_s(dimsh,nspmax,nspmax)
     histomix_s(:,:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
-    print *, i
     if (i<=Nmol-1) then
       iti = itype(i)
        xi = r(1,i)
