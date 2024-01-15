@@ -150,7 +150,9 @@ program trj_analysis
      Call reset_struct
      if (Iconf .eq. 1) then
         call InitStorage(Nmol,nsp,nbcuda)
+        print *, ' Inicl'
         if (rcl>0) call initclus(Iconf)
+        print *, ' exit'
      end if
      side2 = (side/2)**2
      fk(:) = 2*pi/sidel(:)
