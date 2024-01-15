@@ -50,7 +50,7 @@ contains
     maxkd = maxk
     ncelld = ncell
     nnd = nn
-    print *, nn, ncell, maxi, maxj, maxk, rcl, side
+    print *, nn, ncell, maxi, maxj, maxk, rcl, sidel
     Allocate(neigh(0:ncell-1,nn),head(0:ncell-1),lista(natms))
     Allocate(neighd(0:ncell-1,nn),headd(0:ncell-1),listad(natms))
     cellx = sidel(1)/maxi
