@@ -144,6 +144,7 @@ program trj_analysis
      if (rcl > 0) then
       print *, ' buld cells'
         if (use_cell) then
+         print *, Iconf, use_cell, rcl
            if (Iconf==1) call Init_Cell(rcl)
            print *, ' exit init'
            call build_cells

@@ -39,6 +39,8 @@ contains
     !
     ! Cell size extends up to rcut
     !
+    ! 
+    Print *, ' Entrando en init_cell'
     maxi= Int(sidel(1)/rcl)
     maxj= int(sidel(2)/rcl)
     maxk = 1
