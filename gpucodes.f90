@@ -191,9 +191,8 @@ end function fij
              ! Use shared memory histogram to speed calculations
              !
              ij = fij(iti,itj,nsp)
-        !     print *, iti,itj,ij
              ia = atomicadd(histomix_s(ind,ij),1)
-             if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
+          !   if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
        Enddo
        call syncthreads()
@@ -242,11 +241,11 @@ end function fij
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
              ij = fij(i,j,nsp)
-             ia = atomicadd(histomix_s(ind,ij),1)
              !
              ! Use atomics over shared memory to minimize collisions
              !
-             if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
+             ia = atomicadd(histomix_s(ind,ij),1)
+          !   if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
        Enddo
        call syncthreads()
