@@ -191,7 +191,7 @@ contains
          ! Store each block's shared memory histogram on different positions
          ! in global memory
          !
-         histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
+       !  histomix(istart+1:istart+lsmax,:,:) = histomix_s(1:lsmax,:,:)+histomix(istart+1:istart+lsmax,:,:)
        endif 
     end if
   end subroutine rdf_sh
