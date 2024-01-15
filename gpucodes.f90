@@ -36,9 +36,9 @@ module gpcodes
   type (dim3) :: grid, tBlock, thr2, bl2
 contains
  
-   attributes (device) integer function fij(i,j)
+   attributes (device) integer function fij(i,j,nsp)
       implicit none
-      integer i, j
+      integer, value :: i, j, nsp
       if (i<=j) then
         fij = (i-j)*(nsp-1)-(i-1)*(i-2)/2
        else
@@ -152,13 +152,13 @@ end function fij
 
 
 
-  attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nit,hdim,lsmax,itype&
+  attributes (global) subroutine rdf_sh(r,Nmol,dim,histomix,nit,nsp,hdim,lsmax,itype&
        &,side2,sidel,deltar)
        !
        ! Mossively parallel rdf calculation using shared memory
        !
-       use comun, only : dimsh, nitmax, fij
-    integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim
+       use comun, only : dimsh, nitmax
+    integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim, nsp
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj, istart, ij
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
@@ -190,7 +190,7 @@ end function fij
              !
              ! Use shared memory histogram to speed calculations
              !
-             ij = fij(i,j)
+             ij = fij(i,j,nsp)
              ia = atomicadd(histomix_s(ind,ij),1)
              if (iti /= itj) ia = atomicadd(histomix_s(ind,ij),1)
           endif
@@ -205,16 +205,16 @@ end function fij
          histomix(istart+1:istart+lsmax,:) = histomix_s(1:lsmax,:)+histomix(istart+1:istart+lsmax,:)
        endif 
     end if
-    
+
   end subroutine rdf_sh
 
-  attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nit,hdim,lsmax,itype&
+  attributes (global) subroutine rdf2_sh(r,Nmol,dim,histomix,nit,nsp,hdim,lsmax,itype&
        &,side2,sidel,deltar)
        !
        ! Masively parallel rdf calculation using shared memory (2D)
        !
-       use comun, only : dimsh, nitmax, fij
-    integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim
+       use comun, only : dimsh, nitmax
+    integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim, nsp
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj, istart, ij
     real ::  rr2, rr, xi, yi, zi, xd, yd, zd
@@ -240,7 +240,7 @@ end function fij
              itj = itype(j)
              rr = __fsqrt_rn(rr2)
              ind = Nint(rr/deltar)
-             ij = fij(i,j)
+             ij = fij(i,j,nsp)
              ia = atomicadd(histomix_s(ind,ij),1)
              !
              ! Use atomics over shared memory to minimize collisions
