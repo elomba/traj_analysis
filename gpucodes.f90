@@ -40,9 +40,9 @@ contains
       implicit none
       integer, value :: i, j, nsp
       if (i<=j) then
-        fij = (i-j)*(nsp-1)-(i-1)*(i-2)/2
+        fij = (i-1)*(nsp-1)-(i-1)*(i-2)/2
        else
-         fij = (j-i)*(nsp-1)-(j-1)*(j-2)/2
+         fij = (j-1)*(nsp-1)-(j-1)*(j-2)/2
        endif
 end function fij
 
