@@ -228,7 +228,7 @@ end function fij
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(hdim,nit)
     ! Assumed size histogram (memory size must be assigned in the kernel call)
-    integer, shared :: histomix_s(lmax,nit)
+    integer, shared :: histomix_s(lsmax,nit)
     histomix_s(:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
