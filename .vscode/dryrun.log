@@ -2,14 +2,12 @@ make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/yggdrasil/users/enrique/Trabajo/md_analysis'
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  general.f90 -o general.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  netcdflib.f90 -o netcdflib.o
- 
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  Definitions.f90 -o Definitions.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  CPUcodes.f90 -o CPUcodes.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  gpucodes.f90 -o gpucodes.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  DBscan.f90 -o DBscan.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  Init.f90 -o Init.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  Cells.f90 -o Cells.o
- 
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  mainsubs.f90 -o mainsubs.o
 nvfortran  -c -I /usr/local/nv_netcdf/include -cuda -fast -mavx2 -mno-avx512f -gpu=cc60,cc70,cc80  trj_analysis.f90 -o trj_analysis.o
 nvcc -O4 --std c++14 -c ex-scan.cu
