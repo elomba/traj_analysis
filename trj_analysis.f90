@@ -59,6 +59,7 @@ program trj_analysis
   write(*,"(/,'Device Name: ',a)") trim(prop%name)
   write(*,"('Compute Capability: ',i0,'.',i0)") &
        prop%major, prop%minor
+  shmsize = prop%sharedMemPerBlock
   myid = 0
   open(8,file='Input')
   Read(8,*) Nconf, ndim

@@ -106,7 +106,7 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
   Use dev_def
   Use cudafor
   Use Comun
-  Use gpcodes, only : tBlock, grid
+  Use gpcodes, only : tBlock, grid, shmsize
   Implicit none
   integer, intent(IN) :: Nmol, nsp, nbcuda
   integer :: i,j,k, ind, indm
@@ -124,8 +124,8 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
   lmaxy = nint(qmin/(2*pi/sidel(2)))
   if (ndim ==3) lmaxz = nint(qmin/(2*pi/sidel(3)))
   lsmax = nint(minval(sidel(1:ndim))/2.0/deltar)+1
-  if (lsmax*nit*4>dimsh) then
-   print *, " Error g(r) grid ",lsmax," larger that shared memory: Increase grid size dr"
+  if (lsmax*nit*4>shmsize) then
+   print *, " Error g(r) grid ",lsmax," larger that shared memory,',shmsize,': Increase grid size dr"
    stop
   endif
   ! Number of threads for S(Q) calculation (64)

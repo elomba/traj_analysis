@@ -33,6 +33,7 @@ module gpcodes
   integer, parameter :: nthread=64
   integer, device, allocatable :: goffset(:), gneighbors(:), gadjacency(:)
   logical (kind=1), device, allocatable :: gvisited(:), gcore(:), gborder(:)
+  integer :: shmsize
   type (dim3) :: grid, tBlock, thr2, bl2
 contains
  
