@@ -171,7 +171,7 @@ end function fij
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(hdim,nit)
-    integer, shared :: histomix_s(dimsh,nit)
+    integer, shared :: histomix_s(dimsh,nitmax)
     histomix_s(:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
