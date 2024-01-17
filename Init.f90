@@ -124,8 +124,8 @@ Subroutine InitStorage(Nmol,nsp,nbcuda)
   lmaxy = nint(qmin/(2*pi/sidel(2)))
   if (ndim ==3) lmaxz = nint(qmin/(2*pi/sidel(3)))
   lsmax = nint(minval(sidel(1:ndim))/2.0/deltar)+1
-  if (lsmax>dimsh) then
-   print *, " Error g(r) grid ",lsmax," larger that shared memory: Redimension dimsh"
+  if (lsmax*nit*4>dimsh) then
+   print *, " Error g(r) grid ",lsmax," larger that shared memory: Increase grid size dr"
    stop
   endif
   ! Number of threads for S(Q) calculation (64)

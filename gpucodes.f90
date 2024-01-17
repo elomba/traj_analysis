@@ -161,7 +161,6 @@ end function fij
        !
        ! Mossively parallel rdf calculation using shared memory
        !
-       use comun, only : dimsh, nitmax
     integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim, nsp
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj, istart, ij
@@ -171,7 +170,8 @@ end function fij
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(hdim,nit)
-    integer, shared :: histomix_s(dimsh,nitmax)
+    ! Assumed size histogram (memory size must be assigned in the kernel call)
+    integer, shared :: histomix_s(lsmax,nit)
     histomix_s(:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then
@@ -217,7 +217,6 @@ end function fij
        !
        ! Masively parallel rdf calculation using shared memory (2D)
        !
-       use comun, only : dimsh, nitmax
     integer, value, intent(IN) :: Nmol, dim, nit, lsmax, hdim, nsp
     integer, intent(IN) :: itype(Nmol)
     integer i, j, ind, ia, fact, iti, itj, istart, ij
@@ -227,7 +226,8 @@ end function fij
     real, intent(IN) :: sidel(3)
     real, dimension(dim,Nmol), intent(IN) :: r
     integer, intent(INOUT) :: histomix(hdim,nit)
-    integer, shared :: histomix_s(dimsh,nitmax)
+    ! Assumed size histogram (memory size must be assigned in the kernel call)
+    integer, shared :: histomix_s(lmax,nit)
     histomix_s(:,:) = 0
     i = (blockidx%x-1) * blockdim%x + threadidx%x
     if (i<=Nmol-1) then

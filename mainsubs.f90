@@ -442,11 +442,16 @@ subroutine RDFcomp(Nmol,Iconf,nbcuda,nthread)
   integer, intent(IN) :: Nmol, Iconf, nbcuda, nthread
   integer :: istart, i, ind, k, l
   histomix_d(:,:) = 0
+  !
+  ! Note the increase in the number of threads to optimize the use of shared atomics
+  ! Important : the third parameter in the kernel call is the size of dynamically allocated shared
+  !             memory (assumed sized arrays for the shared histogram)
+  !
   if (ndim == 3) then
      call rdf_sh<<<nbcuda/8+1,8*nthread,lsmax*nit*4>>>(r_d,Nmol,ndim,histomix_d,nit&      
           &,nsp,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   else
-     call rdf2_sh<<<nbcuda/16+1,16*nthread>>>(r_d,Nmol,ndim,histomix_d,nit&
+     call rdf2_sh<<<nbcuda/16+1,16*nthread,lsmax*nit*4>>>(r_d,Nmol,ndim,histomix_d,nit&
           &,nsp,nbcuda*lsmax,lsmax,itype_d,side2,sidel_d,deltar)
   endif
   ! Block histograms back from device to host
