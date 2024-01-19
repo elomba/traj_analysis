@@ -124,7 +124,7 @@ module clusters
   real (myprec) ::  tadj=0, tgraph=0, tthrus=0, tbfs=0, avradio=0, averdens=0, drho
   integer, allocatable ::   radii(:), densclus(:), contador(:)
   integer :: jmin, minclsize, Nu_clus, ndrho
-  real (myprec) :: NTclus
+  real (myprec) :: NTclus=0
 end module clusters
 
 

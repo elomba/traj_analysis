@@ -286,7 +286,7 @@ subroutine cluster_analysis(Iconf, Nmol)
   !
   call rdfclcl(ndim,rclxyz(1:ndim,1:cluster_id),cluster_id,sidel&
        &,side2,gclcl,lsmax,deltar,volumen)
-  NTclus = suma
+  NTclus = suma+NTclus
 end subroutine cluster_analysis
 
 subroutine SQcalc(Nmol)
